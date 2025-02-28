@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from backend.clean_text import clean_text, clean_text_fake
+from backend.clean_text import clean_text, preprocess_bangla_fake_news
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 import pickle
 
@@ -15,17 +15,12 @@ model_hate = AutoModelForSequenceClassification.from_pretrained("models/hate_spe
 # Load the Tokenizer for Hate Speech Detection
 tokenizer_hate = AutoTokenizer.from_pretrained("models/hate_speech/bangla-hate_speech-model")
 
-#Create a pipeline for hate Analysis
-hate_classifier = pipeline("text-classification", model=model_hate, tokenizer=tokenizer_hate)
-
-##Not Great --> Optional Use
+##Not Great (Unbalanced Data)--> Optional Use
 # Load the model for Fake News Detection
-with open("models/fake_news/logistic_model_fake.pkl", "rb") as f:
-    lr_model_fake = pickle.load(f)
+model_fake = AutoModelForSequenceClassification.from_pretrained("models/fake_news/bangla_fake_news", )
 
-# Load the TF-IDF Vectorizer for Fake News Detection
-with open("models/fake_news/tfidf_vectorizer_fake.pkl", "rb") as f:
-    tfidf_vectorizer_fake = pickle.load(f)
+# Load the Tokenizer for Fake News Detection
+tokenizer_fake = AutoTokenizer.from_pretrained("models/fake_news/bangla_fake_news")
 
 # Load the model for Sentiment Analysis
 model_sentiment = AutoModelForSequenceClassification.from_pretrained("models/sentiment_analysis/bangla-sentiment-model")
@@ -33,14 +28,20 @@ model_sentiment = AutoModelForSequenceClassification.from_pretrained("models/sen
 # Load the Tokenizer for Sentiment Analysis
 tokenizer_sentiment = AutoTokenizer.from_pretrained("models/sentiment_analysis/bangla-sentiment-model")
 
+
+#Create a pipeline for Fake News Analysis
+fake_classifier = pipeline("text-classification", model=model_fake, tokenizer=tokenizer_fake)
+
+#Create a pipeline for Hate Speech Analysis
+hate_classifier = pipeline("text-classification", model=model_hate, tokenizer=tokenizer_hate)
+
 #Create a pipeline for Sentiment Analysis
 sentiment_classifier = pipeline("sentiment-analysis", model=model_sentiment, tokenizer=tokenizer_sentiment)
 
-
-
+"""
 # URIs for different detect API
 DETECT_HATE_URI = "http://127.0.0.1:5000/detect"
-
+"""
 
 @app.route('/')
 def index():
@@ -71,16 +72,13 @@ def detect_fake():
         data = request.get_json()
 
         text = data['transcription']
-        norm_text = clean_text_fake(text)
+        norm_text = preprocess_bangla_fake_news(text)
 
-        # Feature Extraction using TF-IDF vectorizer
-        feature_text = tfidf_vectorizer_fake.transform([norm_text])
+        # Use the pipeline for inference
+        result = hate_classifier(norm_text)
+        app.logger.info("Authentic: " + str(result))
 
-        #Prediction
-        result = lr_model_fake.predict(feature_text)
-
-        app.logger.info(result)
-        return jsonify({"Fake": str(result[0])})
+        return jsonify({"Authentic": result[0]['label'].split('_')[-1]})
     except Exception as e:
         app.logger.error(e)
         return jsonify({"error": str(e)}), 500

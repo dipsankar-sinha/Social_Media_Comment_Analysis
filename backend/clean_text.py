@@ -6,10 +6,35 @@ import unicodedata
 # Regex pattern to keep Bengali characters and whitespace
 chars_to_ignore_regex = r'[^\u0980-\u09FF\s]'
 
-def clean_text_fake(text):
-    text = re.sub(r"http\S+|www\S+|@\S+|#", "", text)  # Remove URLs and mentions
-    text = re.sub(r"[^A-Za-z\u0980-\u09FF ]", "", text)  # Keep Bengali & English alphabets
-    return text.strip()
+def preprocess_bangla_fake_news(text):
+    """
+    Preprocess Bengali text for Fake News Detection using Bangla BERT.
+
+    Steps:
+    1. Convert to Unicode Normal Form (NFKC) for consistency.
+    2. Replace numbers with a placeholder `<NUM>`.
+    3. Remove special characters (except Bengali script, punctuation, and necessary symbols).
+    4. Normalize multiple spaces.
+
+    Args:
+        text (str): The raw Bengali text.
+
+    Returns:
+        str: The preprocessed text.
+    """
+    # Convert to Unicode Normal Form (NFKC) for consistency
+    text = re.sub(r'\s+', ' ', text.strip())  # Normalize spaces
+
+    # Replace all numbers with <NUM>
+    text = re.sub(r'\d+', '<NUM>', text)
+
+    # Remove unnecessary special characters (preserve Bengali script and essential punctuation)
+    text = re.sub(r'[^ঀ-৿a-zA-Z<>।,!?:;\-\–—\'"(){}\[\]]', ' ', text)
+
+    # Normalize multiple spaces again
+    text = re.sub(r'\s+', ' ', text).strip()
+
+    return text
 
 def clean_text(text):
     # Normalize Unicode and remove unwanted characters
