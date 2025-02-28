@@ -8,19 +8,15 @@ app = Flask(__name__)
 CORS(app)  # This will allow all domains by default
 # CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})  # Replace with your client URL
 
-# Load the model for Hate Speech Detection
-with open("models/hate_speech/logistic_model_hate.pkl", "rb") as f:
-    lr_model_hate = pickle.load(f)
-
-# Load the TF-IDF Vectorizer for Hate Speech Detection
-with open("models/hate_speech/tfidf_vectorizer_hate.pkl", "rb") as f:
-    tfidf_vectorizer_hate = pickle.load(f)
 
 # Load the model for Hate Speech Detection
-model_hate = AutoModelForSequenceClassification.from_pretrained("models/hate_speech//bangla-hatespeech-model")
+model_hate = AutoModelForSequenceClassification.from_pretrained("models/hate_speech/bangla-hate_speech-model", )
 
 # Load the Tokenizer for Hate Speech Detection
-tokenizer_ha = AutoTokenizer.from_pretrained("models/hate_speech/bangla-hatespeech-model")
+tokenizer_hate = AutoTokenizer.from_pretrained("models/hate_speech/bangla-hate_speech-model")
+
+#Create a pipeline for hate Analysis
+hate_classifier = pipeline("text-classification", model=model_hate, tokenizer=tokenizer_hate)
 
 ##Not Great --> Optional Use
 # Load the model for Fake News Detection
@@ -38,7 +34,7 @@ model_sentiment = AutoModelForSequenceClassification.from_pretrained("models/sen
 tokenizer_sentiment = AutoTokenizer.from_pretrained("models/sentiment_analysis/bangla-sentiment-model")
 
 #Create a pipeline for Sentiment Analysis
-classifier = pipeline("sentiment-analysis", model=model_sentiment, tokenizer=tokenizer_sentiment)
+sentiment_classifier = pipeline("sentiment-analysis", model=model_sentiment, tokenizer=tokenizer_sentiment)
 
 
 
@@ -57,18 +53,16 @@ def detect_hate():
         data = request.get_json()
 
         text = data['transcription']
-        norm_text = clean_text_hate(text)
+        norm_text = clean_text(text)
 
-        # Feature Extraction using TF-IDF vectorizer
-        feature_text = tfidf_vectorizer_hate.transform([norm_text])
+        # Use the pipeline for inference
+        result = hate_classifier(norm_text)
+        app.logger.info("Hate: " + str(result))
 
-        # Prediction
-        result = lr_model_hate.predict(feature_text)
-        app.logger.info(result)
+        return jsonify({"Hate": result[0]['label'].split('_')[-1]})
 
-        return jsonify({"Hate": str(result[0])})
     except Exception as e:
-        app.logger.error(e)
+        app.logger.error("error: " + str(e))
         return jsonify({"error": str(e)}), 500
 
 @app.route('/detect_fake', methods=['POST'])
@@ -97,15 +91,15 @@ def detect_sentiment():
         data = request.get_json()
 
         text = data['transcription']
-        norm_text = clean_text_sentiment(text)
+        norm_text = clean_text(text)
 
-        # 3. Use the pipeline for inference
-        result = classifier(norm_text)
-        app.logger.info(result)
+        # Use the pipeline for inference
+        result = sentiment_classifier(norm_text)
+        app.logger.info("Sentiment: " + str(result))
 
         return jsonify({"Sentiment": result[0]['label'].split('_')[-1]})
     except Exception as e:
-        app.logger.error(e)
+        app.logger.error("Error: "+ str(e))
         return jsonify({"error": str(e)}), 500
 
 # Not ready yet

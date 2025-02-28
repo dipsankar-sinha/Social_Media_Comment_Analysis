@@ -1,13 +1,5 @@
-from nltk.corpus import stopwords
-from bangla_stemmer.stemmer.stemmer import BanglaStemmer
 import re
 import unicodedata
-import nltk
-import BnLemma as Lemma
-
-nltk.download('punkt')
-nltk.download('punkt_tab')
-nltk.download('stopwords')
 
 ### Data Cleaning and Normalisation of the text###
 
