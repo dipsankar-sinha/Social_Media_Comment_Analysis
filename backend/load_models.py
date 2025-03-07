@@ -1,6 +1,6 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 
-model_path =  "C:\\Users\\dipsa\Projects\\Social Media Comment Analysis\\backend\\models"
+model_path =  "C:\\Users\\dipsa\\Projects\\Social Media Comment Analysis\\backend\\models"
 def load_hate_classifier():
     # Load the model for Hate Speech Detection
     model_hate = AutoModelForSequenceClassification.from_pretrained(
