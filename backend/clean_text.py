@@ -36,7 +36,7 @@ def preprocess_bangla_fake_news(text):
 
     return text
 
-def clean_text(text):
+def preprocess_bangla_text(text):
     # Normalize Unicode and remove unwanted characters
     text = unicodedata.normalize('NFKD', text)
     text = re.sub(chars_to_ignore_regex, '', text)
