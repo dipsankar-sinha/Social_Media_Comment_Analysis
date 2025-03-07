@@ -1,6 +1,22 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
+import google.generativeai as genai
+import json
 
 model_path =  "C:\\Users\\dipsa\\Projects\\Social Media Comment Analysis\\backend\\models"
+key_path = "C:\\Users\\dipsa\\Projects\\Social Media Comment Analysis\\backend\\api_keys.json"
+
+def load_gemini_model(model_name: str = "gemini-1.5-flash"):
+    # Load Google API Key
+    with open(key_path) as f:
+        api_keys = json.load(f)
+    # Configure Gemini API
+    genai.configure(api_key=api_keys["GOOGLE_API_KEY"])
+
+    # Load the Gemini model
+    gemini_model = genai.GenerativeModel(model_name)
+    return gemini_model
+
+
 def load_hate_classifier():
     # Load the model for Hate Speech Detection
     model_hate = AutoModelForSequenceClassification.from_pretrained(

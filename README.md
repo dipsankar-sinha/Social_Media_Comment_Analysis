@@ -12,12 +12,19 @@
 
 
 ### Required Libraries:
-**Install these libraries in your system by using the Terminal.**
-``` powershell
+**Install these libraries in your system by using the Terminal.** </br>
+``` shell
 pip install "fastapi[standard]"
 pip install uvicorn
-pip install flask
-pip install flask_cors
 pip install transformers
+pip install torch
 ```
-### Models:
+### Running the FASTAPI app:
+**Make sure you are in the root directory of the project.</br>
+Now, run the following command in the Terminal.**
+``` shell
+   uvicorn backend.app:app --reload 
+```
+### Used Models, Algorithms and Result Comparison
+**Will Update this soon.</br>
+Stay Tuned :)**
