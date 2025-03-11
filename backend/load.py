@@ -1,9 +1,10 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
+from googleapiclient.discovery import build
 import google.generativeai as genai
 import json
 
-model_path =  "C:\\Users\\dipsa\\Projects\\Social Media Comment Analysis\\backend\\models"
-key_path = "C:\\Users\\dipsa\\Projects\\Social Media Comment Analysis\\backend\\api_keys.json"
+model_path =  "C:\\Users\\KIIT0001\\Desktop\\finalproject\\Social_Media_Comment_Analysis\\backend\\models"
+key_path = "C:\\Users\\KIIT0001\\Desktop\\finalproject\\Social_Media_Comment_Analysis\\backend\\api_keys.json"
 
 def load_gemini_model(model_name: str = "gemini-1.5-flash"):
     # Load Google API Key
@@ -59,3 +60,9 @@ def load_sentiment_classifier():
     sentiment_classifier = pipeline("sentiment-analysis", model=model_sentiment, tokenizer=tokenizer_sentiment)
 
     return sentiment_classifier
+
+def load_youtubev3_API():
+    with open(key_path) as f:
+        api_keys = json.load(f)
+    youtube = build("youtube", "v3", developerKey=api_keys["YOUTUBE_API_KEY"])
+    return youtube

@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from backend.clean_text import preprocess_bangla_text, preprocess_bangla_fake_news
-from backend.load_models import load_fake_classifier, load_hate_classifier, load_sentiment_classifier, load_gemini_model
+from backend.load import *
 
 import json
 import logging
@@ -22,11 +22,15 @@ sentiment_classifier = load_sentiment_classifier()
 #Loading Gemini Model
 gemini_model = load_gemini_model()
 
+youtube = load_youtubev3_API()
 
 # Request type
 class TextRequest(BaseModel):
     texts: list[str]
 
+class VideoRequest(BaseModel):
+    video_id: str
+    max_results: int = 50
 
 #Response type
 class TextAnalysisFormat(BaseModel):
@@ -43,7 +47,53 @@ class TextAnalysisFormat(BaseModel):
 class TextResponse(BaseModel):
     results: list[TextAnalysisFormat]
 
+# Function to fetch YouTube comments
+def fetch_youtube_comments(video_id: str, max_results: int = 50):
+    try:
+        request = youtube.commentThreads().list(
+            part="snippet",
+            videoId=video_id,
+            maxResults=max_results
+        )
+        response = request.execute()
+        comments = [
+            item["snippet"]["topLevelComment"]["snippet"]["textDisplay"]
+            for item in response.get("items", [])
+        ]
+        return comments
+    except Exception as e:
+        logger.error(f"Error fetching comments: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch YouTube comments.")
 
+@app.get("/")
+def index():
+    logger.info("Index page accessed")
+    return HTMLResponse(content="<h1>Welcome to Social Media Comment Analysis App using FASTAPI!</h1>")
+
+@app.post("/fetch_youtube_comments")
+def get_youtube_comments(request: VideoRequest) -> TextRequest:
+    comments = fetch_youtube_comments(request.video_id, request.max_results)
+    return TextRequest(texts=comments)
+
+@app.post("/youtube_comment_analysis", response_model=TextResponse)
+def youtube_comment_analysis(request: VideoRequest, fake_analysis: bool = False) -> TextResponse:
+    try:
+        # Fetch YouTube comments
+        comments = fetch_youtube_comments(request.video_id, request.max_results)
+        text_request = TextRequest(texts=comments)
+
+        # Process comments
+        results = process_text_with_gemini(text_request)
+        results = process_hate(results)
+        results = process_sentiment(results)
+        if fake_analysis:
+            results = process_fake_news(results)
+        return results
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    
 def process_text_with_gemini(request: TextRequest) -> TextResponse:
     prompt = f"""
             You are an advanced AI assistant specializing in **multilingual text analysis**, ensuring complete and accurate processing of text inputs in **Bengali (Indian & Bangladeshi), English, or Romanized Bengali**.
