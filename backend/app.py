@@ -1,7 +1,10 @@
+from typing import Optional
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from backend.clean_text import preprocess_bangla_text, preprocess_bangla_fake_news
+##from clean_text import preprocess_bangla_text, preprocess_bangla_fake_news
 from backend.load import *
 
 import json
@@ -9,6 +12,15 @@ import logging
 import os
 
 app = FastAPI()
+
+ # Configure CORS Middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Allow React app URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 #Configure Logging
 logging.basicConfig(level=logging.INFO)
@@ -32,6 +44,23 @@ class VideoRequest(BaseModel):
     video_id: str
     max_results: int = 50
 
+class ChannelRequest(BaseModel): 
+    username: Optional[str] = None
+    channel_id: Optional[str] = None 
+  
+
+# Youtube Response 
+class ChannelStatsResponse(BaseModel):
+    channel_id: str
+    title: str
+    description: str
+    subscriber_count: Optional[int] = None
+    video_count: int
+    view_count: int
+
+class ChannelIDResponse(BaseModel):
+    channel_id: str
+
 #Response type
 class TextAnalysisFormat(BaseModel):
     original_text: str | None = None
@@ -46,6 +75,79 @@ class TextAnalysisFormat(BaseModel):
 
 class TextResponse(BaseModel):
     results: list[TextAnalysisFormat]
+
+# Function to fetch YouTube channel statistics
+def fetch_channel_id(username: str) -> str:
+    """Fetch channel ID using YouTube handle (@username)"""
+    try:
+        # Ensure handle starts with @
+        if not username.startswith("@"):
+            username = f"@{username.lstrip('@')}"
+
+        request = youtube.channels().list(
+            part="id",
+            forHandle=username.strip()  # Correct parameter for handles
+        )
+        response = request.execute()
+
+        if not response.get("items"):
+            logger.error(f"No channel found for handle: {username}")
+            raise HTTPException(status_code=404, detail="Channel not found")
+            
+        return response["items"][0]["id"]
+        
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"ID Fetch Error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Channel ID fetch failed")
+
+def fetch_channel_stats(channel_id: str) -> ChannelStatsResponse:
+    """Fetch complete channel statistics"""
+    try:
+        request = youtube.channels().list(
+            part="snippet,statistics",
+            id=channel_id
+        )
+        response = request.execute()
+
+        if not response.get("items"):
+            logger.error(f"No data for channel ID: {channel_id}")
+            raise HTTPException(status_code=404, detail="Channel data not found")
+
+        data = response["items"][0]
+        snippet = data["snippet"]
+        stats = data.get("statistics", {})
+
+        return ChannelStatsResponse(
+            channel_id=channel_id,
+            title=snippet["title"],
+            description=snippet.get("description", ""),
+            subscriber_count=int(stats["subscriberCount"]) if "subscriberCount" in stats else None,
+            video_count=int(stats.get("videoCount", 0)),
+            view_count=int(stats.get("viewCount", 0))
+        )
+
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"Stats Fetch Error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Statistics fetch failed")
+
+# ===== API Endpoints =====
+@app.post("/get_channel_id", response_model=ChannelIDResponse)
+def get_channel_id(request: ChannelRequest):
+    if not request.username:
+        raise HTTPException(400, "Username required")
+    return {"channel_id": fetch_channel_id(request.username)}
+
+@app.post("/get_channel_stats", response_model=ChannelStatsResponse)
+def get_channel_stats(request: ChannelRequest):
+    if request.channel_id:
+        return fetch_channel_stats(request.channel_id)
+    if request.username:
+        return fetch_channel_stats(fetch_channel_id(request.username))
+    raise HTTPException(400, "Provide channel_id or username")
 
 # Function to fetch YouTube comments
 def fetch_youtube_comments(video_id: str, max_results: int = 50):
