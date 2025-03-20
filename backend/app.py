@@ -16,7 +16,7 @@ app = FastAPI()
  # Configure CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Allow React app URL
+    allow_origins=["http://localhost:3000"],  # Allows requests from React app
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -61,6 +61,13 @@ class ChannelStatsResponse(BaseModel):
 class ChannelIDResponse(BaseModel):
     channel_id: str
 
+class TrendingVideo(BaseModel):
+    id: dict
+    snippet: dict
+
+class TrendingVideosResponse(BaseModel):
+    items: list[TrendingVideo]
+
 #Response type
 class TextAnalysisFormat(BaseModel):
     original_text: str | None = None
@@ -75,6 +82,8 @@ class TextAnalysisFormat(BaseModel):
 
 class TextResponse(BaseModel):
     results: list[TextAnalysisFormat]
+
+
 
 # Function to fetch YouTube channel statistics
 def fetch_channel_id(username: str) -> str:
@@ -133,6 +142,7 @@ def fetch_channel_stats(channel_id: str) -> ChannelStatsResponse:
     except Exception as e:
         logger.error(f"Stats Fetch Error: {str(e)}")
         raise HTTPException(status_code=500, detail="Statistics fetch failed")
+    
 
 # ===== API Endpoints =====
 @app.post("/get_channel_id", response_model=ChannelIDResponse)
@@ -400,3 +410,32 @@ def comment_analysis(request: TextRequest, fake_analysis: bool = False) -> TextR
     except Exception as e:
         logger.error('Error :' + str(e))
         raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get("/trending_videos")
+def get_trending_videos():
+    try:
+        request = youtube.videos().list(
+            part="snippet,statistics",
+            chart="mostPopular",
+            regionCode="IN",
+            maxResults=10,  # Added maxResults
+        )
+        response = request.execute()
+        # Example of returning only necessary data (optional)
+        simplified_items = []
+        for item in response.get('items', []):
+            simplified_items.append({
+                'id': item['id'],
+                'snippet': {
+                    'title': item['snippet']['title'],
+                    'thumbnails': item['snippet']['thumbnails']
+                }
+            })
+        return {'items': simplified_items} #return only the needed information.
+    except Exception as e:
+        logging.error(f"Error fetching trending videos: {e} - Response: {response if 'response' in locals() else 'No response'}") #added response to the log.
+        raise HTTPException(status_code=500, detail="Failed to fetch trending videos.")
+    
+
+
+
