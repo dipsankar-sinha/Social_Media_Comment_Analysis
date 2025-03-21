@@ -3,8 +3,8 @@ from googleapiclient.discovery import build
 import google.generativeai as genai
 import json
 
-model_path =  "C:\\Users\\KIIT0001\\Desktop\\finalproject\\Social_Media_Comment_Analysis\\backend\\models"
-key_path = "C:\\Users\\KIIT0001\\Desktop\\finalproject\\Social_Media_Comment_Analysis\\backend\\api_keys.json"
+model_path =  "C:\\Users\\dipsa\\Projects\\Social Media Comment Analysis\\backend\\models"
+key_path = "C:\\Users\\dipsa\\Projects\\Social Media Comment Analysis\\backend\\api_keys.json"
 
 def load_gemini_model(model_name: str = "gemini-1.5-flash"):
     # Load Google API Key
@@ -50,11 +50,11 @@ def load_fake_classifier():
 def load_sentiment_classifier():
     # Load the model for Sentiment Analysis
     model_sentiment = AutoModelForSequenceClassification.from_pretrained(
-        f"{model_path}\\sentiment_analysis\\bangla-sentiment-model")
+        f"{model_path}\\sentiment_analysis\\bangla-sentiment-analysis-v2_2025")
 
     # Load the Tokenizer for Sentiment Analysis
     tokenizer_sentiment = AutoTokenizer.from_pretrained(
-        f"{model_path}\\sentiment_analysis\\bangla-sentiment-model")
+        f"{model_path}\\sentiment_analysis\\bangla-sentiment-analysis-v2_2025")
 
     # Create a pipeline for Sentiment Analysis
     sentiment_classifier = pipeline("sentiment-analysis", model=model_sentiment, tokenizer=tokenizer_sentiment)
