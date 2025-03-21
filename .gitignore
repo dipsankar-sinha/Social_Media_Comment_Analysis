@@ -3,6 +3,7 @@
 
 /.idea
 /backend/api_keys.json
+/backend/path.py
 /backend/test
 /backend/models
 /Project_Abstract.docx
