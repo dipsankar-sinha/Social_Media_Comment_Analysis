@@ -4,7 +4,6 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from backend.clean_text import preprocess_bangla_text, preprocess_bangla_fake_news
-##from clean_text import preprocess_bangla_text, preprocess_bangla_fake_news
 from backend.load import *
 
 import json
@@ -13,7 +12,7 @@ import os
 
 app = FastAPI()
 
- # Configure CORS Middleware
+# Configure CORS Middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],  # Allows requests from React app
@@ -22,34 +21,37 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-#Configure Logging
+# Configure Logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-#Loading the classifiers for Hate Speech, Fake News and Sentiment Detection
+# Loading the classifiers for Hate Speech, Fake News and Sentiment Detection
 fake_classifier = load_fake_classifier()
 hate_classifier = load_hate_classifier()
 sentiment_classifier = load_sentiment_classifier()
 
-#Loading Gemini Model
+# Loading Gemini Model
 gemini_model = load_gemini_model()
 
+# Loading YouTube V3 API
 youtube = load_youtubev3_API()
 
-# Request type
+# Text Request type ---> Gemini and Other Trained Models
 class TextRequest(BaseModel):
     texts: list[str]
 
+# Video Request type ---> YouTube V3 API
 class VideoRequest(BaseModel):
     video_id: str
     max_results: int = 50
 
+# Channel Request type ---> YouTube V3 API
 class ChannelRequest(BaseModel): 
     username: Optional[str] = None
     channel_id: Optional[str] = None 
   
 
-# Youtube Response 
+# Different YouTube Response and format types <--- YouTube V3 API
 class ChannelStatsResponse(BaseModel):
     channel_id: str
     title: str
@@ -68,7 +70,7 @@ class TrendingVideo(BaseModel):
 class TrendingVideosResponse(BaseModel):
     items: list[TrendingVideo]
 
-#Response type
+# Response format for each text
 class TextAnalysisFormat(BaseModel):
     original_text: str | None = None
     converted_text: str
@@ -79,7 +81,7 @@ class TextAnalysisFormat(BaseModel):
     sentiment: str | None = None
     fake: str | None = None
 
-
+# Response type <--- Gemini and Other Trained Models
 class TextResponse(BaseModel):
     results: list[TextAnalysisFormat]
 
@@ -352,14 +354,6 @@ def process_fake_news(request: TextRequest | TextResponse) -> TextResponse:
         results=results
     )
 
-
-@app.get('/')
-def index():
-    logger.info("Index page")
-    logger.info(os.getcwd())
-    return HTMLResponse(content="<h1>Welcome to Social Media Comment Analysis App using FASTAPI!</h1>")
-
-
 #Calling Gemini API to handle English and Code_Switched or Romanized Bengali
 
 @app.post('/analyze_texts_with_gemini', response_model=TextResponse)
@@ -433,7 +427,7 @@ def get_trending_videos():
             })
         return {'items': simplified_items} #return only the needed information.
     except Exception as e:
-        logging.error(f"Error fetching trending videos: {e} - Response: {response if 'response' in locals() else 'No response'}") #added response to the log.
+        logging.error(f"Error fetching trending videos: {e} - Response: {response if 'response' in locals() else 'No response'}") # added response to the log.
         raise HTTPException(status_code=500, detail="Failed to fetch trending videos.")
     
 
