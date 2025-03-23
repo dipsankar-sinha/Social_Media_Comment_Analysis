@@ -1,10 +1,8 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 from googleapiclient.discovery import build
+from backend.path import *
 import google.generativeai as genai
 import json
-
-model_path =  "C:\\Users\\KIIT0001\\Desktop\\finalproject\\Social_Media_Comment_Analysis\\backend\\models"
-key_path = "C:\\Users\\KIIT0001\\Desktop\\finalproject\\Social_Media_Comment_Analysis\\backend\\api_keys.json"
 
 def load_gemini_model(model_name: str = "gemini-1.5-flash"):
     # Load Google API Key
