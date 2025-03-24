@@ -13,7 +13,7 @@ app = FastAPI()
 # Configure CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Allows requests from React app
+    allow_origins=["*"],  # Allows requests from all origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -32,7 +32,7 @@ sentiment_classifier = load_sentiment_classifier()
 gemini_model = load_gemini_model()
 
 # Loading YouTube V3 API
-youtube = load_youtubev3_API()
+youtube = load_youtube_v3()
 
 # Text Request type ---> Gemini and Other Trained Models
 class TextRequest(BaseModel):

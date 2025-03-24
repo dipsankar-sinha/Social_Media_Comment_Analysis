@@ -1,6 +1,7 @@
 // src/App.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import DOMPurify from 'dompurify';
 
 import './App.css';
 import './Futuristic.css';
@@ -26,6 +27,7 @@ function App() {
   const [showTopLists, setShowTopLists] = useState(false);
   const [trendingVideos, setTrendingVideos] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [htmlContent, setHtmlContent] = useState(""); // State to store HTML content
 
   useEffect(() => {
     const fetchTrendingVideos = async () => {
@@ -80,17 +82,27 @@ function App() {
       setLoading(false);
     }
   };
-  /*const aboutUs=async ()=> {
-    try
-    {
-      response=await axios.get('http://localhost:8000/')
+  const handleAboutUs = async (event)=> {
+    try {
+      event.preventDefault(); // Prevent default anchor behavior (navigation)
+      setLoading(true);
+      if (htmlContent === ''){
+        let response= await axios.get('http://localhost:8000/');
+        const rawHtml = response.data;
+        // Sanitize the fetched HTML
+        const sanitizedHtml = DOMPurify.sanitize(rawHtml);
+        setHtmlContent(sanitizedHtml); // Update state with the fetched HTML
+      } else {
+        setHtmlContent('');
+      }
+    } catch(error) {
+      console.error('Error while accessing the information:', error);
+      alert('Failed to access the page. Check console for details.');
+      setHtmlContent("<p>Failed to load content. Please try again.</p>");
+    } finally {
+      setLoading(false);
     }
-    catch
-    {
-      console.error('Error analyzing video comments:', error);
-      alert('Failed to analyze video comments. Check console for details.');
-    }
-  };*/
+  };
 
   const handleChannelStatsFetch = async () => {
     try {
@@ -140,6 +152,7 @@ function App() {
     setShowHomePage(true);
     setShowTopLists(false);
     setTrendingVideos([]);
+    setHtmlContent('');
   };
 
   const handleTopListsClick = () => {
@@ -176,20 +189,19 @@ function App() {
           <div className="right-panel">
             {channelStats && <ChannelStatsCard channelStats={channelStats} subscriberChartData={subscriberChartData} />}
             {analysisResults.length > 0 && (
-  <div className="results-section">
-    <h2>Analysis Results</h2>
-    <div className="results-grid">
-      {analysisResults.map((result, index) => (
-        <AnalysisResults key={index} result={result} />
-      ))}
-    </div>
-  </div>
-)}
-
+              <div className="results-section">
+                <h2>Analysis Results</h2>
+                <div className="results-grid">
+                  {analysisResults.map((result, index) => (
+                    <AnalysisResults key={index} result={result} />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </main>
-      <Footer />
+      <Footer handleAboutUs={handleAboutUs} htmlContent={htmlContent}/>
     </div>
   );
 }

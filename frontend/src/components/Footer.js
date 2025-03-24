@@ -1,13 +1,21 @@
 import React from 'react';
 
-function Footer() {
-  return (
+function Footer({htmlContent, handleAboutUs}) {
+    return (
     <footer className="app-footer">
-      <p>&copy; 2025 NeonPulse</p>
+      <p>&copy; <strong>2025 Dipsankar Sinha, Nadeem Khan & Hrithik Roy</strong> </p>
       <div className="footer-links">
         <a href="/terms">Terms</a>
-        <a href="/privacy">Privacy</a>
+        <a
+            href="/aboutus"
+            onClick={(event) => handleAboutUs(event)}
+        >
+            About Us
+        </a>
         <a href="/contact">Contact</a>
+          <div
+            dangerouslySetInnerHTML={{ __html: htmlContent }}
+          />
       </div>
     </footer>
   );

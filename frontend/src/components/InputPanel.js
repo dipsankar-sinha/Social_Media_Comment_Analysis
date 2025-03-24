@@ -16,17 +16,18 @@ function InputPanel({
       <div className="input-section">
         <h2>Text Analysis</h2>
         <textarea
-          placeholder="Enter text to analyze (one per line)"
+          placeholder="Enter texts to analyze (one per line)"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
         />
         <label>
+          Include Fake News Analysis
           <input
             type="checkbox"
             checked={fakeAnalysis}
             onChange={(e) => setFakeAnalysis(e.target.checked)}
           />
-          Include Fake News Analysis
+
         </label>
         <button onClick={handleTextAnalysis}>Analyze Text</button>
       </div>
@@ -46,12 +47,12 @@ function InputPanel({
           onChange={(e) => setMaxResults(e.target.value)}
         />
         <label>
+          Include Fake News Analysis
           <input
             type="checkbox"
             checked={fakeAnalysis}
             onChange={(e) => setFakeAnalysis(e.target.checked)}
           />
-          Include Fake News Analysis
         </label>
         <button onClick={handleVideoCommentAnalysis}>Analyze Video Comments</button>
       </div>

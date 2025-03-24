@@ -128,12 +128,12 @@ button:hover {
 
 .footer-links a {
   margin: 0 0.5rem;
-  color: #00ffe7;
+  color: #d39d58;
   text-decoration: none;
 }
 
 .footer-links a:hover {
-  text-shadow: 0 0 5px #00ffe7;
+  text-shadow: 0 0 5px #d39d58;
 }
 /* Dark Mode Styles */
 .dark-mode {
