@@ -32,7 +32,7 @@ sentiment_classifier = load_sentiment_classifier()
 gemini_model = load_gemini_model()
 
 # Loading YouTube V3 API
-youtube = load_youtubev3_API()
+youtube = load_youtube_v3()
 
 # Text Request type ---> Gemini and Other Trained Models
 class TextRequest(BaseModel):
