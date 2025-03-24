@@ -80,6 +80,17 @@ function App() {
       setLoading(false);
     }
   };
+  /*const aboutUs=async ()=> {
+    try
+    {
+      response=await axios.get('http://localhost:8000/')
+    }
+    catch
+    {
+      console.error('Error analyzing video comments:', error);
+      alert('Failed to analyze video comments. Check console for details.');
+    }
+  };*/
 
   const handleChannelStatsFetch = async () => {
     try {
