@@ -3,8 +3,8 @@ from googleapiclient.discovery import build
 import google.generativeai as genai
 import json
 
-model_path =  "C:\\Users\\KIIT0001\\Desktop\\finalproject\\Social_Media_Comment_Analysis\\backend\\models"
-key_path = "C:\\Users\\KIIT0001\\Desktop\\finalproject\\Social_Media_Comment_Analysis\\backend\\api_keys.json"
+model_path =  "C:\\final_year_project\\Social_Media_Comment_Analysis\\backend\\models"
+key_path = "C:\\final_year_project\\Social_Media_Comment_Analysis\\backend\\api_keys.json"
 
 def load_gemini_model(model_name: str = "gemini-1.5-flash"):
     # Load Google API Key
