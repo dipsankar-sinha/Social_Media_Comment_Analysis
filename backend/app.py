@@ -1,14 +1,12 @@
-from typing import Optional
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from backend.clean_text import preprocess_bangla_text, preprocess_bangla_fake_news
 from backend.load import *
 
 import json
 import logging
-import os
 
 app = FastAPI()
 
@@ -47,8 +45,8 @@ class VideoRequest(BaseModel):
 
 # Channel Request type ---> YouTube V3 API
 class ChannelRequest(BaseModel): 
-    username: Optional[str] = None
-    channel_id: Optional[str] = None 
+    username: str | None = None
+    channel_id: str | None = None
   
 
 # Different YouTube Response and format types <--- YouTube V3 API
@@ -56,7 +54,7 @@ class ChannelStatsResponse(BaseModel):
     channel_id: str
     title: str
     description: str
-    subscriber_count: Optional[int] = None
+    subscriber_count: int | None = None
     video_count: int
     view_count: int
 
@@ -85,7 +83,11 @@ class TextAnalysisFormat(BaseModel):
 class TextResponse(BaseModel):
     results: list[TextAnalysisFormat]
 
-
+@app.get("/")
+def info():
+    logger.info("Information page accessed")
+    # Serve the HTML file
+    return FileResponse("backend/info.html")
 
 # Function to fetch YouTube channel statistics
 def fetch_channel_id(username: str) -> str:
@@ -178,11 +180,6 @@ def fetch_youtube_comments(video_id: str, max_results: int = 50):
     except Exception as e:
         logger.error(f"Error fetching comments: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch YouTube comments.")
-
-@app.get("/")
-def index():
-    logger.info("Index page accessed")
-    return HTMLResponse(content="<h1>Welcome to Social Media Comment Analysis App using FASTAPI!</h1>")
 
 @app.post("/fetch_youtube_comments")
 def get_youtube_comments(request: VideoRequest) -> TextRequest:

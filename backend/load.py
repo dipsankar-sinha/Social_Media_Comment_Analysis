@@ -1,7 +1,7 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 from googleapiclient.discovery import build
 from backend.path import *
-import google.generativeai as genai
+import google.generativeai as gen_ai
 import json
 
 def load_gemini_model(model_name: str = "gemini-1.5-flash"):
@@ -9,10 +9,10 @@ def load_gemini_model(model_name: str = "gemini-1.5-flash"):
     with open(key_path) as f:
         api_keys = json.load(f)
     # Configure Gemini API
-    genai.configure(api_key=api_keys["GOOGLE_API_KEY"])
+    gen_ai.configure(api_key=api_keys["GOOGLE_API_KEY"])
 
     # Load the Gemini model
-    gemini_model = genai.GenerativeModel(model_name)
+    gemini_model = gen_ai.GenerativeModel(model_name)
     return gemini_model
 
 
