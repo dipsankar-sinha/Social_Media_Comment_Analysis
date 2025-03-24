@@ -20,7 +20,7 @@ function App() {
   const [showHomePage, setShowHomePage] = useState(true);
   const [showTopLists, setShowTopLists] = useState(false);
   const [trendingVideos, setTrendingVideos] = useState([]);
-
+  const [darkMode, setDarkMode] = useState(true);
 
   useEffect(() => {
     const fetchTrendingVideos = async () => {
@@ -130,8 +130,12 @@ function App() {
     setShowTopLists(true);
   };
 
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
   return (
-    <div className="app-container">
+    <div className={`app-container ${darkMode ? "dark-mode" : ""}`}>
       <header className="app-header">
         <div className="logo">Your Logo</div>
         <div className="search-bar">
@@ -141,6 +145,9 @@ function App() {
         <nav>
           <button onClick={resetState}>Home</button>
           <button onClick={handleTopListsClick}>Top Lists</button>
+          <button className="dark-mode-toggle" onClick={toggleDarkMode}>
+            {darkMode ? "Light" : "Dark"}
+          </button>
           <a href="/resources">Resources</a>
           <a href="/login">Login</a>
         </nav>
