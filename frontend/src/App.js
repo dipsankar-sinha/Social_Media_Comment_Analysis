@@ -82,7 +82,7 @@ function App() {
       setLoading(false);
     }
   };
-  const handleAboutUs = async (event)=> {
+  const handleAbout = async (event)=> {
     try {
       event.preventDefault(); // Prevent default anchor behavior (navigation)
       setLoading(true);
@@ -201,7 +201,7 @@ function App() {
           </div>
         )}
       </main>
-      <Footer handleAboutUs={handleAboutUs} htmlContent={htmlContent}/>
+      <Footer handleAbout={handleAbout} htmlContent={htmlContent}/>
     </div>
   );
 }

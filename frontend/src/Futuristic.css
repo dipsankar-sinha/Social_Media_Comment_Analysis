@@ -68,6 +68,7 @@ body.light-mode .input-section button:hover {
 }
 
 .logo {
+  display: flex;
   font-size: 2rem;
   font-weight: bold;
   color: #d39d58;
@@ -103,6 +104,7 @@ body.light-mode .input-section button:hover {
 
 /* Navigation Buttons and Links */
 .nav-button, .nav-link {
+  display: inline;
   background: transparent;
   color: #d39d58;
   border: 1px solid #d39d58;
@@ -132,7 +134,7 @@ body.light-mode .input-section button:hover {
 .left-panel, .right-panel {
   display: block;
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
+  background: #1801300C;
   border: 1px solid rgba(0, 255, 231, 0.3);
   border-radius: 12px;
   padding: 20px;
@@ -156,16 +158,20 @@ body.light-mode .input-section button:hover {
 .input-section textarea
 {
   font-family: 'Orbitron', sans-serif;;
-  width: 98%;
-  padding: 10px;
+  width: 90%;
+
   background: rgba(15, 15, 15, 0.9);
   color: #00ffe7;
   border: 1px solid #00ffe7;
   border-radius: 8px;
   outline: none;
 }
+.input-section input[type="text"],
+.input-section input[type="number"]{
+  width: 60%;
+}
 .input-section textarea {
-  height: 200px;
+  height: 8rem;
 }
 .input-section label {
   display: flex;
@@ -182,12 +188,14 @@ body.light-mode .input-section button:hover {
 }
 
 .input-section button {
+  display: block;
   margin-top: 20px;
   padding: 10px 20px;
+  font-family: 'Orbitron', sans-serif;
   background: #d39d58;
   color: #0f0f0f;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: bold;

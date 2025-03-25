@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from backend.clean_text import preprocess_bangla_text, preprocess_bangla_fake_news
+from backend.clean_text import *
 from backend.load import *
 
 import json
@@ -176,7 +176,7 @@ def fetch_youtube_comments(video_id: str, max_results: int = 50):
             item["snippet"]["topLevelComment"]["snippet"]["textDisplay"]
             for item in response.get("items", [])
         ]
-        return comments
+        return clean_api_texts(comments) #Applying initial cleaning
     except Exception as e:
         logger.error(f"Error fetching comments: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch YouTube comments.")

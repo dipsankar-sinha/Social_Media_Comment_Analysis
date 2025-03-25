@@ -1,16 +1,16 @@
 import React from 'react';
 
-function Footer({htmlContent, handleAboutUs}) {
+function Footer({htmlContent, handleAbout}) {
     return (
     <footer className="app-footer">
       <p>&copy; <strong>2025 Dipsankar Sinha, Nadeem Khan & Hrithik Roy</strong> </p>
       <div className="footer-links">
         <a href="/terms">Terms</a>
         <a
-            href="/aboutus"
-            onClick={(event) => handleAboutUs(event)}
+            href="/about"
+            onClick={(event) => handleAbout(event)}
         >
-            About Us
+            About
         </a>
         <a href="/contact">Contact</a>
           <div
