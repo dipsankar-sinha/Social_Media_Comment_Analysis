@@ -1,3 +1,4 @@
+from typing import Counter
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -57,6 +58,7 @@ class ChannelStatsResponse(BaseModel):
     subscriber_count: int | None = None
     video_count: int
     view_count: int
+    videos: list[dict] | None = None
 
 class ChannelIDResponse(BaseModel):
     channel_id: str
@@ -132,13 +134,17 @@ def fetch_channel_stats(channel_id: str) -> ChannelStatsResponse:
         snippet = data["snippet"]
         stats = data.get("statistics", {})
 
-        return ChannelStatsResponse(
+        # Fetch recent videos
+        videos = fetch_channel_videos(channel_id)
+
+        return ChannelStatsResponse (
             channel_id=channel_id,
             title=snippet["title"],
             description=snippet.get("description", ""),
             subscriber_count=int(stats["subscriberCount"]) if "subscriberCount" in stats else None,
             video_count=int(stats.get("videoCount", 0)),
-            view_count=int(stats.get("viewCount", 0))
+            view_count=int(stats.get("viewCount", 0)),
+            videos=videos, # Add videos to the response
         )
 
     except HTTPException as he:
@@ -147,6 +153,28 @@ def fetch_channel_stats(channel_id: str) -> ChannelStatsResponse:
         logger.error(f"Stats Fetch Error: {str(e)}")
         raise HTTPException(status_code=500, detail="Statistics fetch failed")
     
+def fetch_channel_videos(channel_id: str, max_results: int = 5) -> list[dict]:
+    """Fetch recent videos from a channel."""
+    try:
+        request = youtube.search().list(
+            part="snippet",
+            channelId=channel_id,
+            order="date",
+            type="video",
+            maxResults=max_results,
+        )
+        response = request.execute()
+        videos = []
+        for item in response.get("items", []):
+            videos.append({
+                "video_id": item["id"]["videoId"],
+                "title": item["snippet"]["title"],
+                "thumbnail": item["snippet"]["thumbnails"]["default"]["url"],
+            })
+        return videos
+    except Exception as e:
+        logger.error(f"Video Fetch Error: {str(e)}")
+        return []
 
 # ===== API Endpoints =====
 @app.post("/get_channel_id", response_model=ChannelIDResponse)
@@ -203,6 +231,8 @@ def youtube_comment_analysis(request: VideoRequest, fake_analysis: bool = False)
     except Exception as e:
         logger.error(f"Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+    
+    
     
     
 def process_text_with_gemini(request: TextRequest) -> TextResponse:
@@ -427,6 +457,3 @@ def get_trending_videos():
         logging.error(f"Error fetching trending videos: {e} - Response: {response if 'response' in locals() else 'No response'}") # added response to the log.
         raise HTTPException(status_code=500, detail="Failed to fetch trending videos.")
     
-
-
-

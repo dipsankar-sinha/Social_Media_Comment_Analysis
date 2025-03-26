@@ -1,0 +1,2 @@
+model_path = "C:\\Users\\KIIT0001\\Desktop\\finalproject\\Social_Media_Comment_Analysis\\backend\\models"
+key_path = "C:\\Users\\KIIT0001\\Desktop\\finalproject\\Social_Media_Comment_Analysis\\backend\\api_keys.json"

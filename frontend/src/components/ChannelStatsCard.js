@@ -32,7 +32,7 @@ const ChannelStatsCard = ({ channelStats, subscriberChartData }) => {
       <p><strong>Channel ID:</strong> {channelStats.channel_id}</p>
       <p><strong>Title:</strong> {channelStats.title}</p>
       <p><strong>Description:</strong> {channelStats.description}</p>
-      <p><strong>Subscribers:</strong> {channelStats.subscriber_count}</p>
+      <p><strong>Subscribers:</strong> {channelStats.subscriber_count || 'N/A'}</p>
       <p><strong>Videos:</strong> {channelStats.video_count}</p>
       <p><strong>Views:</strong> {channelStats.view_count}</p>
 
@@ -47,6 +47,22 @@ const ChannelStatsCard = ({ channelStats, subscriberChartData }) => {
               <Line data={subscriberChartData} />
             </div>
           )}
+        </div>
+      )}
+
+      {channelStats.videos && channelStats.videos.length > 0 && (
+        <div className="channel-videos">
+          <h3>Recent Videos</h3>
+          <div className="video-list">
+            {channelStats.videos.map((video) => (
+              <div key={video.video_id} className="video-item">
+                <a href={`https://www.youtube.com/watch?v=${video.video_id}`} target="_blank" rel="noopener noreferrer">
+                  <img src={video.thumbnail} alt={video.title} />
+                  <p>{video.title}</p>
+                </a>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

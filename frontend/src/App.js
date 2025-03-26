@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DOMPurify from 'dompurify';
@@ -27,7 +26,7 @@ function App() {
   const [showTopLists, setShowTopLists] = useState(false);
   const [trendingVideos, setTrendingVideos] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [htmlContent, setHtmlContent] = useState(""); // State to store HTML content
+  const [htmlContent, setHtmlContent] = useState("");
 
   useEffect(() => {
     const fetchTrendingVideos = async () => {
@@ -82,16 +81,16 @@ function App() {
       setLoading(false);
     }
   };
-  const handleAbout = async (event)=> {
+
+  const handleAbout = async (event) => {
     try {
-      event.preventDefault(); // Prevent default anchor behavior (navigation)
+      event.preventDefault();
       setLoading(true);
       if (htmlContent === ''){
-        let response= await axios.get('http://localhost:8000/');
+        let response = await axios.get('http://localhost:8000/');
         const rawHtml = response.data;
-        // Sanitize the fetched HTML
         const sanitizedHtml = DOMPurify.sanitize(rawHtml);
-        setHtmlContent(sanitizedHtml); // Update state with the fetched HTML
+        setHtmlContent(sanitizedHtml);
       } else {
         setHtmlContent('');
       }
@@ -117,7 +116,7 @@ function App() {
         return;
       }
       setChannelStats(response.data);
-      const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Aug','Sep','Oct','Nov','Dec'];
+      const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       const data = labels.map(() => Math.floor(Math.random() * 10000) + (response.data.subscriber_count || 0));
       setSubscriberChartData({
         labels: labels,
