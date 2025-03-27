@@ -1,4 +1,4 @@
-from typing import Counter
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -8,8 +8,17 @@ from backend.load import *
 
 import json
 import logging
+import matplotlib.pyplot as plt
+import uuid
+import os
+import base64
+import io
 
 app = FastAPI()
+
+# Directory to store generated graphs
+GRAPH_DIR = "generated_graphs"
+os.makedirs(GRAPH_DIR, exist_ok=True)
 
 # Configure CORS Middleware
 app.add_middleware(
@@ -214,8 +223,8 @@ def get_youtube_comments(request: VideoRequest) -> TextRequest:
     comments = fetch_youtube_comments(request.video_id, request.max_results)
     return TextRequest(texts=comments)
 
-@app.post("/youtube_comment_analysis", response_model=TextResponse)
-def youtube_comment_analysis(request: VideoRequest, fake_analysis: bool = False) -> TextResponse:
+@app.post("/youtube_comment_analysis")
+def youtube_comment_analysis(request: VideoRequest, fake_analysis: bool = False):
     try:
         # Fetch YouTube comments
         comments = fetch_youtube_comments(request.video_id, request.max_results)
@@ -225,15 +234,89 @@ def youtube_comment_analysis(request: VideoRequest, fake_analysis: bool = False)
         results = process_text_with_gemini(text_request)
         results = process_hate(results)
         results = process_sentiment(results)
+        
         if fake_analysis:
             results = process_fake_news(results)
-        return results
+
+        # Create a dictionary with the analysis results
+        if isinstance(results, BaseModel):
+            results_dict = results.dict()
+        else:
+            results_dict = dict(results)
+            
+        # Add the required aggregated statistics
+        aggregated_stats = aggregate_results(results)
+        results_dict.update(aggregated_stats)
+        
+        # Generate bar chart summary
+        analysis_chart = generate_analysis_chart(results_dict)
+        results_dict["analysis_chart"] = analysis_chart
+
+        return results_dict
+    
     except Exception as e:
         logger.error(f"Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
     
+def aggregate_results(results: TextResponse):
+    """Aggregate classification results into percentages for all features."""
+    total = len(results.results)
+    if total == 0:
+        return {
+            'hate_speech': {'percentage': 0},
+            'sentiment': {'positive_percentage': 0},
+            'fake_news': {'percentage': 0},
+            'spam': {'percentage': 0},
+            'emotion': {'percentage': 0},
+            'topic': {'percentage': 0},
+        }
+
+    hate_count = sum(1 for r in results.results if r.hate == 'Hate')
+    positive_count = sum(1 for r in results.results if r.sentiment == 'Positive')
+    fake_count = sum(1 for r in results.results if getattr(r, 'fake', 'Not Fake') == 'Fake')
+    spam_count = sum(1 for r in results.results if r.spam == 'Spam')
+    emotion_count = sum(1 for r in results.results if r.emotion == 'Happy')
+    topic_count = sum(1 for r in results.results if r.topic == 'Politics')
+
+    return {
+        'hate_speech': {'percentage': (hate_count / total) * 100 if total > 0 else 0},
+        'sentiment': {'positive_percentage': (positive_count / total) * 100 if total > 0 else 0},
+        'fake_news': {'percentage': (fake_count / total) * 100 if total > 0 else 0},
+        'spam':  {'percentage': (spam_count / total) * 100 if total > 0 else 0},
+        'emotion':  {'percentage': (emotion_count / total) * 100 if total > 0 else 0},
+        'topic':  {'percentage': (topic_count / total) * 100 if total > 0 else 0},
+    }
     
-    
+def generate_analysis_chart(results):
+    try:
+        categories = ['Hate Speech', 'Sentiment', 'Fake News', 'Spam', 'Emotion', 'Topic']
+        values = [
+            results.get('hate_speech', {}).get('percentage', 0),
+            results.get('sentiment', {}).get('positive_percentage', 0),
+            results.get('fake_news', {}).get('percentage', 0),
+            results.get('spam', {}).get('percentage', 0),
+            results.get('emotion', {}).get('percentage', 0),
+            results.get('topic', {}).get('percentage', 0),
+        ]
+
+        plt.figure(figsize=(12, 6))  # Adjust figure size for more bars
+        plt.bar(categories, values, color=['red', 'blue', 'orange', 'green', 'purple', 'brown'])
+        plt.xlabel('Categories')
+        plt.ylabel('Percentage')
+        plt.title('YouTube Comment Analysis Summary')
+        plt.ylim(0, 100)
+
+        img_buffer = io.BytesIO()
+        plt.savefig(img_buffer, format='png', bbox_inches='tight')  # Use bbox_inches to prevent labels from being cut off
+        plt.close()
+        img_buffer.seek(0)
+        img_str = base64.b64encode(img_buffer.getvalue()).decode('utf-8')
+
+        return img_str
+    except Exception as e:
+        logger.error(f"Chart generation error: {str(e)}")
+        return None
     
 def process_text_with_gemini(request: TextRequest) -> TextResponse:
     prompt = f"""

@@ -27,6 +27,12 @@ function App() {
   const [trendingVideos, setTrendingVideos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [htmlContent, setHtmlContent] = useState("");
+  const [analysisChart, setAnalysisChart] = useState(null);
+  const [spamResults, setSpamResults] = useState([]);
+  const [emotionResults, setEmotionResults] = useState([]);
+  const [topicResults, setTopicResults] = useState([]);
+
+
 
   useEffect(() => {
     const fetchTrendingVideos = async () => {
@@ -71,7 +77,19 @@ function App() {
       }, {
         params: { fake_analysis: fakeAnalysis },
       });
+  
       setAnalysisResults(response.data.results);
+      setSpamResults(response.data.spam);
+      setEmotionResults(response.data.emotion);
+      setTopicResults(response.data.topic);
+  
+      // Handle analysis chart
+      if (response.data.analysis_chart) {
+        setAnalysisChart(response.data.analysis_chart);
+      } else {
+        setAnalysisChart(null);
+      }
+  
       setShowHomePage(false);
       setShowTopLists(false);
     } catch (error) {
@@ -192,12 +210,27 @@ function App() {
                 <h2>Analysis Results</h2>
                 <div className="results-grid">
                   {analysisResults.map((result, index) => (
-                    <AnalysisResults key={index} result={result} />
+                    <AnalysisResults 
+                    key={index} 
+                    result={result}
+                    spam={spamResults[index]}
+                    emotion={emotionResults[index]}
+                    topic={topicResults[index]} />
                   ))}
                 </div>
               </div>
             )}
-          </div>
+              {analysisChart && (
+                <div className="chart-section">
+                  <h3>Analysis Chart</h3>
+                  <img 
+                    src={`data:image/png;base64,${analysisChart}`} 
+                    alt="Analysis Chart" 
+                    style={{ maxWidth: "100%", height: "auto", borderRadius: "8px" }}
+                  />
+                </div>
+              )}
+            </div>
         )}
       </main>
       <Footer handleAbout={handleAbout} htmlContent={htmlContent}/>
