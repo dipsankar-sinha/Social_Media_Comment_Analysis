@@ -1,20 +1,83 @@
-/* App.css */
+/* ====================================================
+   Merged CSS File (from App.css and Futuristic.css)
+   ====================================================
 
-body {
-  margin: 0;
+   Notes:
+   - In case of conflicting styles, the Futuristic.css definitions have been prioritized.
+   - Redundant rules (e.g. duplicate keyframes or repeated selectors)
+     have been merged without loss of any information.
+   - Where different unit types were used (px vs rem), pixel values from Futuristic.css
+     have been converted to rem (16px = 1rem) for consistency and responsiveness.
+*/
+
+/* ====================================================
+   1. FONT IMPORT & BASE SETUP
+   ==================================================== */
+
+/* Import futuristic font (prioritized) */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+
+/* ====================================================
+   2. RESET & BASE STYLES
+   ==================================================== */
+
+/* Base styles for body and futuristic elements */
+/* Prioritized from Futuristic.css; additional properties from App.css have been merged if non‐conflicting */
+body, .futuristic {
   font-family: 'Orbitron', sans-serif;
-  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-  color: #ffffff;
+  background: #1a1a1a;
   background-size: 400% 400%;
   animation: gradientShift 20s ease infinite;
+  color: #ffffff;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  transition: background 0.5s ease;
 }
 
+/* Gradient Animation (common to both files) */
 @keyframes gradientShift {
-  0% {background-position: 0% 50%;}
-  50% {background-position: 100% 50%;}
-  100% {background-position: 0% 50%;}
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
+/* ====================================================
+   3. TYPOGRAPHY
+   ==================================================== */
+
+/* Logo Styles */
+/* Conflict: Prioritize Futuristic.css version */
+.logo {
+  display: flex;
+  justify-content: left;
+  font-size: 2rem;
+  font-weight: bold;
+  /*text-shadow: 0 0 8px #d39d58;*/
+}
+
+/* Additional typography rules from App.css */
+.result-header {
+  margin-bottom: 12px;
+}
+
+.original-text {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.converted-text {
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+/* ====================================================
+   4. HEADER & NAVIGATION
+   ==================================================== */
+
+/* --- App Header (from App.css) --- */
 .app-header {
   display: flex;
   justify-content: space-between;
@@ -26,116 +89,363 @@ body {
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
-.logo {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: #00ffe7;
-  text-shadow: 0 0 5px #00ffe7, 0 0 10px #00ffe7;
+/* --- Futuristic Header (prioritized) --- */
+.futuristic-header {
+  background:  #0f0f0fe5;
+  border-bottom: 1px solid #ffffff;
+  /* Converted 15px 30px to rem: 15px ≈ 0.94rem, 30px ≈ 1.88rem */
+  padding: 0.94rem 1.88rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /*backdrop-filter: blur(10px);*/
+  /*box-shadow: 0 0 10px #d39d58;*/
 }
 
-nav button,
-nav a {
+/* --- Navigation Buttons & Links --- */
+
+/* Navigation rules from Futuristic.css (prioritized for .nav-button and .nav-link) */
+.nav-button, .nav-link {
+  display: inline;
   background: transparent;
-  border: 1px solid #00ffe7;
-  color: #00ffe7;
-  padding: 0.5rem 1rem;
-  margin-left: 0.5rem;
-  border-radius: 8px;
+  color: #00b7ff;
+  border: 1px solid #00b7ff;
+  /* Converted margin: 0 8px to 0 0.63rem; padding: 6px 14px to 0.38rem 0.88rem (approx.) */
+  margin: 0 0.63rem;
+  padding: 0.38rem 0.88rem;
   cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 6px;
   text-decoration: none;
-  transition: 0.3s ease-in-out;
+  font-weight: bold;
 }
 
-nav button:hover,
-nav a:hover {
-  background: #00ffe7;
-  color: #0f0c29;
-  box-shadow: 0 0 10px #00ffe7;
+.nav-button:hover, .nav-link:hover {
+  background: #00b7ff;
+  color: #0f0f0f;
+  box-shadow: 0 0 10px #00b7ff;
 }
 
+/* ====================================================
+   5. MAIN CONTENT LAYOUT
+   ==================================================== */
+
+/* --- Main Content --- */
+/* Conflict: Prioritize Futuristic.css version */
 .main-content {
+  display: flex;
+  flex-direction: row;
+  /* Converted 30px to 1.88rem and gap 20px to 1.25rem */
+  padding: 1.88rem;
+  gap: 1.25rem;
+}
+
+/* --- Left & Right Panels (Futuristic.css) --- */
+.left-panel, .right-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background: #1801300C;
+  border: 1px solid #ccc;
+  border-radius: 2rem;
+  /* Converted 20px padding to 1.25rem */
   padding: 2rem;
 }
 
-.input-section,
-.channel-stats-card,
-.result-card,
-.trending-video-card {
+/* ====================================================
+   6. COMPONENTS & CONTENT BOXES
+   ==================================================== */
+
+/* --- Input Section Container --- */
+/* Using container style from App.css; nested element rules come later */
+.input-section {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 1rem;
+  border: 1px solid #00b7ff;
+  border-radius: 2rem;
+  padding: 1.25rem;
   margin-bottom: 2rem;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 0.5rem #00b7ff;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
-.input-section:hover,
-.result-card:hover,
-.trending-video-card:hover {
-  transform: scale(1.02);
-  box-shadow: 0 0 20px rgba(0, 255, 231, 0.4);
+.input-section:hover {
+  transform: scale(1.03);
 }
 
-textarea,
-input[type="text"],
-input[type="number"] {
-  width: 100%;
-  padding: 0.75rem;
-  border-radius: 10px;
+
+/* --- Input Section (Nested Element Styles from Futuristic.css) --- */
+.input-section h2 {
+  display: block;
+  margin-bottom: 1.25rem;
+  /*text-shadow: 0 0 5px #00ffe7;*/
+}
+
+.input-section input[type="text"],
+.input-section input[type="number"],
+.input-section textarea {
+  display: block;
+  color: #cccccc;
+  font-family: 'Orbitron', sans-serif;
+  /* For Futuristic, width is set to 90% for textarea and 60% for text/number fields */
+  width: 90%;
+  background: #0f0f0fe5;
+  margin-bottom: 1.25rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  outline: none;
+}
+
+.input-section input[type="text"],
+.input-section input[type="number"] {
+  height: 1.5rem;
+  width: 60%;
+  gap: 0;
+}
+
+.input-section textarea {
+  height: 8rem;
+}
+
+.input-section label {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  padding: 0;
+  margin-bottom: 1.25rem;
+  text-align: left;
+  font-size: 1rem;
+}
+
+/* --- Input Section Button (Futuristic.css prioritized) --- */
+/* Converted padding 10px 20px to approx. 0.63rem 1.25rem */
+.input-section button {
+  display: block;
+  margin-bottom: 1.25rem;
+  padding: 0.63rem 1.25rem;
+  font-family: 'Orbitron', sans-serif;
+  background: #00b7ff;
+  color: #0f0f0f;
   border: none;
-  margin-bottom: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-}
-
-button {
-  background: #00ffe7;
-  border: none;
-  color: #0f0c29;
-  padding: 0.75rem 1.5rem;
-  border-radius: 10px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.3s ease-in-out;
-}
-
-button:hover {
-  background: #00c3a5;
-  box-shadow: 0 0 10px #00ffe7;
-}
-
-.results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
-}
-
-.subscriber-chart {
-  margin-top: 1rem;
-  background: rgba(0, 255, 231, 0.1);
   border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  animation: glowPulse 2s infinite;
+}
+
+.input-section button:hover {
+  background: #0f0f0f;
+  color: #00b7ff;
+  border: 1px solid #00b7ff;
+  box-shadow: 0 0 10px #00b7ff;
+}
+
+/* --- Result Card --- */
+/* Conflict: Prioritize Futuristic.css version for base styling */
+.result-card {
+  background: rgba(15, 15, 15, 0.85);
+  border: 1px solid #cccccc;
+  /* Futuristic.css uses 10px border-radius; retain that but converted to rem: 10px ≈ 0.63rem */
+  border-radius: 0.63rem;
+  /* Converted padding: 15px to 0.94rem */
+  padding: 0.94rem;
+  box-shadow: 0 0 0.5rem #00b7ff;
+}
+
+/* Include hover effect from App.css (non-conflicting as base style is from Futuristic) */
+.result-card:hover {
+  transform: translateY(-0.25rem); /* 4px ≈ 0.25rem */
+  box-shadow: 0 0.375rem 0.94rem rgba(0, 247, 255, 0.4); /* 6px and 15px converted */
+}
+
+.video-list .youtube-videos-card{
+  display: flex;
+  justify-content: center;
+  margin-left: 2rem;
+  height: 45vh;
+  width: 90%;
+}
+
+/* --- Trending Video Card --- */
+.right-panel h2 {
+  margin-top: 0;
+  margin-left: 0.5rem;
+  padding-top: 0;
+  padding-bottom: 0.5rem;
+  font-size: 1.5rem;
+}
+/* Conflict: Prioritize Futuristic.css version */
+.youtube-videos-card {
+  display: flex;
+  width: 95%;
+  background: rgba(15, 15, 15, 0.8);
+  border: 1px solid #00b7ff;
+  border-radius: 1rem;
+  padding: 1rem;
+  margin-left: 0.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 0.5rem #00b7ff;
+  transition: transform 0.3s;
+}
+.youtube-videos-card div {
+  display: block;
   padding: 1rem;
 }
+.youtube-videos-card:hover {
+  transform: scale(1.03);
+}
+.youtube-videos-card img {
+  width: 50%;
+  /* Converted border-radius 8px to 0.5rem; margin-bottom 10px to 0.63rem */
+  border-radius: 0.5rem;
+  margin-bottom: 0.63rem;
+}
+.youtube-videos-card a {
+  display: block;
+  width: 30vh;
+  margin-bottom: 1.25rem;
+  padding: 0.63rem 1.25rem;
+  background: #f42c2c;
+  color: #cccccc;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  animation: glowPulse 2s infinite;
+}
 
+.youtube-videos-card a:hover {
+  background: #cccccc;
+  color: #f42c2c;
+  border: 1px solid #f42c2c;
+  box-shadow: 0 0 10px #f42c2c;
+}
+.youtube-videos-card input[type="number"] {
+  display: inline;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  margin-left: 0.5rem;
+  padding: 0.15rem;
+  width: 10%;
+}
+.btn {
+  display: block;
+  width: 50%;
+  font-family: 'Orbitron', sans-serif;
+  margin-bottom: 1.25rem;
+  padding: 0.63rem 1.25rem;
+  background: #00b7ff;
+  color: #0f0f0f;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  animation: glowPulse 2s infinite;
+}
+
+.btn:hover {
+  background: #0f0f0f;
+  color: #00b7ff;
+  border: 1px solid #00b7ff;
+  box-shadow: 0 0 10px #00b7ff;
+}
+
+/* --- Channel Stats Card --- */
+/* Conflict: Prioritize Futuristic.css version */
+.channel-stats-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #00ffe7;
+  /* Converted border-radius 12px to 0.75rem */
+  border-radius: 0.75rem;
+  /* Converted padding 20px to 1.25rem; margin-bottom 20px to 1.25rem */
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 0 15px rgba(0, 255, 231, 0.2);
+  backdrop-filter: blur(8px);
+}
+
+/* --- Subscriber Chart --- */
+/* Merged duplicate definitions from App.css */
+.subscriber-chart {
+  /* Using background, border-radius, and padding from the first definition */
+  background: rgba(0, 255, 231, 0.1);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  /* Using the later margin-top value; converted 15px to approx. 0.94rem */
+  margin-top: 0.94rem;
+}
+
+/* --- Additional Result Components (from App.css) --- */
+.result-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px;
+}
+
+.result-item {
+  background-color: rgba(0, 247, 255, 0.05);
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #c0f0ff;
+}
+
+/* --- Toggle Button (from App.css) --- */
+.toggle-button {
+  background-color: #0ff;
+  color: #000;
+  border: none;
+  padding: 0.5rem; /* originally 8px 12px; simplified */
+  margin: 0.63rem 0;
+  cursor: pointer;
+  border-radius: 0.38rem;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.toggle-button:hover {
+  background-color: #0cc;
+}
+
+/* ====================================================
+   7. FOOTER
+   ==================================================== */
+
+/* --- App Footer --- */
+/* Conflict: Prioritize Futuristic.css version */
 .app-footer {
   text-align: center;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  /* Converted padding 15px to 0.94rem */
+  padding: 0.94rem;
+  background:  #0f0f0fe5;
+  border-top: 1px solid #ffffff;
+  /*box-shadow: 0 -0.125rem 0.63rem #d39d58; !* 2px and 10px converted *!*/
 }
 
+/* --- Footer Links --- */
+/* Conflict: Prioritize Futuristic.css version */
 .footer-links a {
-  margin: 0 0.5rem;
-  color: #d39d58;
+  color: #00b7ff;
+  /* Converted margin 0 10px to 0 0.63rem */
+  margin: 0 0.63rem;
   text-decoration: none;
+  transition: all 0.3s ease;
 }
 
 .footer-links a:hover {
-  text-shadow: 0 0 5px #d39d58;
+  text-shadow: 0 0 8px #00b7ff;
 }
-/* Dark Mode Styles */
+
+/* ====================================================
+   8. DARK MODE STYLES (from App.css)
+   ==================================================== */
+
 .dark-mode {
   background-color: #0d0d0d;
   color: #ffffff;
@@ -173,68 +483,140 @@ button:hover {
 .dark-mode button:hover {
   background: linear-gradient(135deg, #0072ff, #00c6ff);
 }
-.toggle-button {
-  background-color: #0ff;
-  color: #000;
+
+/* ====================================================
+   9. GENERAL BUTTON STYLES (from App.css)
+   ==================================================== */
+
+/* Generic button style (outside input-section) */
+button {
+  background: #00ffe7;
   border: none;
-  padding: 8px 12px;
-  margin: 10px 0;
+  color: #0f0c29;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-weight: bold;
   cursor: pointer;
-  border-radius: 6px;
-  font-weight: bold;
-  transition: background-color 0.3s;
+  transition: 0.3s ease-in-out;
 }
 
-.toggle-button:hover {
-  background-color: #0cc;
+button:hover {
+  background: #00c3a5;
+  box-shadow: 0 0 10px #00ffe7;
 }
 
-.subscriber-chart {
-  margin-top: 15px;
-}
-.result-card {
-  background: linear-gradient(135deg, #1e1e2f, #2b2b40);
-  border: 1px solid #00f7ff;
+/* ====================================================
+   10. MODAL & LOADER / ANIMATIONS (from Futuristic.css)
+   ==================================================== */
+
+/* --- Modal --- */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #00ffe7;
   border-radius: 12px;
-  padding: 16px;
-  margin: 12px;
-  box-shadow: 0 4px 10px rgba(0, 247, 255, 0.2);
-  color: #e0e0f0;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 30px;
+  box-shadow: 0 0 20px rgba(0, 255, 231, 0.5);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
 }
 
-.result-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 15px rgba(0, 247, 255, 0.4);
+.modal h2 {
+  color: #00ffe7;
+  margin-bottom: 15px;
 }
 
-.result-header {
-  margin-bottom: 12px;
+.modal p {
+  color: #ffffff;
 }
 
-.original-text {
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #00f7ff;
-  margin-bottom: 4px;
+/* --- Loader Spinner & Overlay --- */
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
-.converted-text {
-  font-size: 0.95rem;
-  color: #ccc;
-  font-style: italic;
+.loader {
+  /* Two definitions exist in Futuristic.css; merged and converted pixel values */
+  border: 8px solid rgba(0, 255, 255, 0.2);
+  border-top: 8px solid #00ffff;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff, 0 0 60px #00ffff;
 }
 
-.result-details {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 8px;
+/* Spinner Animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-.result-item {
-  background-color: rgba(0, 247, 255, 0.05);
-  padding: 8px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  color: #c0f0ff;
+/* --- Holographic Loader --- */
+.loader-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 20, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(5px);
+}
+
+.holo-loader {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 255, 255, 0.1), rgba(0, 0, 0, 0.5));
+  box-shadow: 0 0 40px rgba(0, 255, 255, 0.7), inset 0 0 30px rgba(0, 255, 255, 0.5);
+  animation: rotateHolo 2s linear infinite;
+}
+
+.holo-glow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #00fff7, #8c00ff, #00fff7);
+  filter: blur(15px);
+  animation: spinGlow 4s linear infinite;
+  opacity: 0.6;
+}
+
+.holo-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.5rem;
+  color: #00fff7;
+  text-shadow: 0 0 10px #00fff7, 0 0 20px #00fff7, 0 0 40px #8c00ff;
+}
+
+@keyframes rotateHolo {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spinGlow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-360deg); }
 }

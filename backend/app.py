@@ -51,7 +51,7 @@ class TextRequest(BaseModel):
 # Video Request type ---> YouTube V3 API
 class VideoRequest(BaseModel):
     video_id: str
-    max_results: int = 50
+    max_results: int = 10
 
 # Channel Request type ---> YouTube V3 API
 class ChannelRequest(BaseModel): 
@@ -178,7 +178,7 @@ def fetch_channel_videos(channel_id: str, max_results: int = 5) -> list[dict]:
             videos.append({
                 "video_id": item["id"]["videoId"],
                 "title": item["snippet"]["title"],
-                "thumbnail": item["snippet"]["thumbnails"]["default"]["url"],
+                "thumbnail": item["snippet"]["thumbnails"],
             })
         return videos
     except Exception as e:
@@ -226,6 +226,7 @@ def get_youtube_comments(request: VideoRequest) -> TextRequest:
 @app.post("/youtube_comment_analysis")
 def youtube_comment_analysis(request: VideoRequest, fake_analysis: bool = False):
     try:
+        logger.error(f"Video_id : {request.video_id}, Max Results: {request.max_results}")
         # Fetch YouTube comments
         comments = fetch_youtube_comments(request.video_id, request.max_results)
         text_request = TextRequest(texts=comments)
@@ -287,7 +288,7 @@ def aggregate_results(results: TextResponse):
         'emotion':  {'percentage': (emotion_count / total) * 100 if total > 0 else 0},
         'topic':  {'percentage': (topic_count / total) * 100 if total > 0 else 0},
     }
-    
+
 def generate_analysis_chart(results):
     try:
         categories = ['Hate Speech', 'Sentiment', 'Fake News', 'Spam', 'Emotion', 'Topic']

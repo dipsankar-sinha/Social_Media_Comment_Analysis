@@ -1,6 +1,6 @@
 // src/components/Loader.js
 import React from 'react';
-import './Futuristic.css';
+import './App.css';
 
 const Loader = () => {
   return (

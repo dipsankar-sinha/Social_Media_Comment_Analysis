@@ -42,7 +42,7 @@ function InputPanel({
         />
         <input
           type="number"
-          placeholder="Max Results (default 50)"
+          placeholder="Max Results (default 10)"
           value={maxResults}
           onChange={(e) => setMaxResults(e.target.value)}
         />
@@ -54,7 +54,7 @@ function InputPanel({
             onChange={(e) => setFakeAnalysis(e.target.checked)}
           />
         </label>
-        <button onClick={handleVideoCommentAnalysis}>Analyze Video Comments</button>
+        <button onClick={() => handleVideoCommentAnalysis(videoID)}>Analyze Video Comments</button>
       </div>
 
       <div className="input-section">
