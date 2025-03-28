@@ -1,6 +1,6 @@
 // src/components/Loader.js
-import React from 'react';
-import './App.css';
+import React from "react";
+import "./App.css";
 
 const Loader = () => {
   return (

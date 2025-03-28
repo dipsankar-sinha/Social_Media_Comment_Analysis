@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
 const AnalysisResultCard = ({ result }) => {
-  if (!result) return null;  // Prevent render if result is undefined
+  if (!result) return null; // Prevent render if result is undefined
 
   return (
     <div className="result-card">
@@ -10,12 +10,22 @@ const AnalysisResultCard = ({ result }) => {
         <p className="converted-text">({result.converted_text})</p>
       </div>
       <div className="result-details">
-        <div className="result-item"><strong>Topic:</strong> {result.topic}</div>
-        <div className="result-item"><strong>Emotion:</strong> {result.emotion}</div>
-        <div className="result-item"><strong>Spam:</strong> {result.spam}</div>
-        <div className="result-item"><strong>Hate:</strong> {result.hate}</div>
-        <div className="result-item"><strong>Sentiment:</strong> {result.sentiment}</div>
-        <div className="result-item"><strong>Fake:</strong> {result.fake}</div>
+        <div className="result-item">
+          <strong>Topic:</strong> {result.topic}
+        </div>
+        <div className="result-item">
+          <strong>Emotion:</strong> {result.emotion}
+        </div>
+        <div className="result-item">
+          <strong>Spam:</strong> {result.spam}
+        </div>
+        <div className="result-item">
+          <strong>Hate:</strong> {result.hate}
+        </div>
+        <div className="result-item">
+          <strong>Sentiment:</strong> {result.sentiment}
+        </div>
+        {/*<div className="result-item"><strong>Fake:</strong> {result.fake}</div>*/}
       </div>
     </div>
   );

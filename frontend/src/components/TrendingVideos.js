@@ -1,23 +1,41 @@
-import React from 'react';
+import React from "react";
 
-function TrendingVideos({ trendingVideos, maxResults, setMaxResults, handleVideoCommentAnalysis}) {
+function TrendingVideos({
+  trendingVideos,
+  maxResults,
+  setMaxResults,
+  handleVideoCommentAnalysis,
+}) {
   return (
-    <div className="right-panel">
+    <div className="result-panel">
       <h2>Trending YouTube Videos</h2>
       {trendingVideos.map((video) => (
         <div key={video.id} className="youtube-videos-card">
-          <img src={video.snippet.thumbnails.maxres ? video.snippet.thumbnails.maxres.url : video.snippet.thumbnails.standard.url} alt={video.snippet.title} />
+          <img
+            src={
+              video.snippet.thumbnails.maxres
+                ? video.snippet.thumbnails.maxres.url
+                : video.snippet.thumbnails.standard.url
+            }
+            alt={video.snippet.title}
+          />
           <div>
             <h3>{video.snippet.title}</h3>
             <p>{video.snippet.description}</p>
-            <a href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
+            <a
+              href={`https://www.youtube.com/watch?v=${video.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Watch on YouTube
+            </a>
             <label>
               Select No. Of Comments:
               <input
-                  type="number"
-                  placeholder="Max Results (default 10)"
-                  value={maxResults}
-                  onChange={(e) => setMaxResults(Number(e.target.value))}
+                type="number"
+                placeholder="Max Results (default 10)"
+                value={maxResults}
+                onChange={(e) => setMaxResults(Number(e.target.value))}
               />
             </label>
             <button

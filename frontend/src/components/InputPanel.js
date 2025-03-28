@@ -1,18 +1,24 @@
-import React from 'react';
+import React from "react";
 
 function InputPanel({
-  inputText, setInputText,
-  videoID, setVideoID,
-  maxResults, setMaxResults,
-  channelUsername, setChannelUsername,
-  channelID, setChannelID,
-  fakeAnalysis, setFakeAnalysis,
+  inputText,
+  setInputText,
+  videoID,
+  setVideoID,
+  maxResults,
+  setMaxResults,
+  channelUsername,
+  setChannelUsername,
+  channelID,
+  setChannelID,
+  fakeAnalysis,
+  setFakeAnalysis,
   handleTextAnalysis,
   handleVideoCommentAnalysis,
-  handleChannelStatsFetch
+  handleChannelStatsFetch,
 }) {
   return (
-    <div className="left-panel">
+    <div className="input-panel">
       <div className="input-section">
         <h2>Text Analysis</h2>
         <textarea
@@ -27,7 +33,6 @@ function InputPanel({
             checked={fakeAnalysis}
             onChange={(e) => setFakeAnalysis(e.target.checked)}
           />
-
         </label>
         <button onClick={handleTextAnalysis}>Analyze Text</button>
       </div>
@@ -54,7 +59,9 @@ function InputPanel({
             onChange={(e) => setFakeAnalysis(e.target.checked)}
           />
         </label>
-        <button onClick={() => handleVideoCommentAnalysis(videoID)}>Analyze Video Comments</button>
+        <button onClick={() => handleVideoCommentAnalysis(videoID)}>
+          Analyze Video Comments
+        </button>
       </div>
 
       <div className="input-section">

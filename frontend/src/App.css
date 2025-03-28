@@ -15,7 +15,7 @@
    ==================================================== */
 
 /* Import futuristic font (prioritized) */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap");
 
 /* ====================================================
    2. RESET & BASE STYLES
@@ -23,8 +23,9 @@
 
 /* Base styles for body and futuristic elements */
 /* Prioritized from Futuristic.css; additional properties from App.css have been merged if non‐conflicting */
-body, .futuristic {
-  font-family: 'Orbitron', sans-serif;
+body,
+.futuristic {
+  font-family: "Orbitron", sans-serif;
   background: #1a1a1a;
   background-size: 400% 400%;
   animation: gradientShift 20s ease infinite;
@@ -38,9 +39,15 @@ body, .futuristic {
 
 /* Gradient Animation (common to both files) */
 @keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* ====================================================
@@ -91,7 +98,7 @@ body, .futuristic {
 
 /* --- Futuristic Header (prioritized) --- */
 .futuristic-header {
-  background:  #0f0f0fe5;
+  background: #0f0f0fe5;
   border-bottom: 1px solid #ffffff;
   /* Converted 15px 30px to rem: 15px ≈ 0.94rem, 30px ≈ 1.88rem */
   padding: 0.94rem 1.88rem;
@@ -105,7 +112,8 @@ body, .futuristic {
 /* --- Navigation Buttons & Links --- */
 
 /* Navigation rules from Futuristic.css (prioritized for .nav-button and .nav-link) */
-.nav-button, .nav-link {
+.nav-button,
+.nav-link {
   display: inline;
   background: transparent;
   color: #00b7ff;
@@ -120,7 +128,8 @@ body, .futuristic {
   font-weight: bold;
 }
 
-.nav-button:hover, .nav-link:hover {
+.nav-button:hover,
+.nav-link:hover {
   background: #00b7ff;
   color: #0f0f0f;
   box-shadow: 0 0 10px #00b7ff;
@@ -141,11 +150,12 @@ body, .futuristic {
 }
 
 /* --- Left & Right Panels (Futuristic.css) --- */
-.left-panel, .right-panel {
+.input-panel,
+.result-panel {
   display: flex;
   flex-direction: column;
   width: 100%;
-  background: #1801300C;
+  background: #1801300c;
   border: 1px solid #ccc;
   border-radius: 2rem;
   /* Converted 20px padding to 1.25rem */
@@ -165,12 +175,13 @@ body, .futuristic {
   padding: 1.25rem;
   margin-bottom: 2rem;
   box-shadow: 0 0 0.5rem #00b7ff;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 .input-section:hover {
   transform: scale(1.03);
 }
-
 
 /* --- Input Section (Nested Element Styles from Futuristic.css) --- */
 .input-section h2 {
@@ -184,7 +195,7 @@ body, .futuristic {
 .input-section textarea {
   display: block;
   color: #cccccc;
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   /* For Futuristic, width is set to 90% for textarea and 60% for text/number fields */
   width: 90%;
   background: #0f0f0fe5;
@@ -222,7 +233,7 @@ body, .futuristic {
   display: block;
   margin-bottom: 1.25rem;
   padding: 0.63rem 1.25rem;
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   background: #00b7ff;
   color: #0f0f0f;
   border: none;
@@ -258,7 +269,7 @@ body, .futuristic {
   box-shadow: 0 0.375rem 0.94rem rgba(0, 247, 255, 0.4); /* 6px and 15px converted */
 }
 
-.video-list .youtube-videos-card{
+.video-list .youtube-videos-card {
   display: flex;
   justify-content: center;
   margin-left: 2rem;
@@ -267,7 +278,7 @@ body, .futuristic {
 }
 
 /* --- Trending Video Card --- */
-.right-panel h2 {
+.result-panel h2 {
   margin-top: 0;
   margin-left: 0.5rem;
   padding-top: 0;
@@ -334,7 +345,7 @@ body, .futuristic {
 .btn {
   display: block;
   width: 50%;
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   margin-bottom: 1.25rem;
   padding: 0.63rem 1.25rem;
   background: #00b7ff;
@@ -423,7 +434,7 @@ body, .futuristic {
   text-align: center;
   /* Converted padding 15px to 0.94rem */
   padding: 0.94rem;
-  background:  #0f0f0fe5;
+  background: #0f0f0fe5;
   border-top: 1px solid #ffffff;
   /*box-shadow: 0 -0.125rem 0.63rem #d39d58; !* 2px and 10px converted *!*/
 }
@@ -555,13 +566,20 @@ button:hover {
   width: 80px;
   height: 80px;
   animation: spin 1s linear infinite;
-  box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff, 0 0 60px #00ffff;
+  box-shadow:
+    0 0 15px #00ffff,
+    0 0 30px #00ffff,
+    0 0 60px #00ffff;
 }
 
 /* Spinner Animation */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* --- Holographic Loader --- */
@@ -584,8 +602,14 @@ button:hover {
   width: 200px;
   height: 200px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 255, 255, 0.1), rgba(0, 0, 0, 0.5));
-  box-shadow: 0 0 40px rgba(0, 255, 255, 0.7), inset 0 0 30px rgba(0, 255, 255, 0.5);
+  background: radial-gradient(
+    circle,
+    rgba(0, 255, 255, 0.1),
+    rgba(0, 0, 0, 0.5)
+  );
+  box-shadow:
+    0 0 40px rgba(0, 255, 255, 0.7),
+    inset 0 0 30px rgba(0, 255, 255, 0.5);
   animation: rotateHolo 2s linear infinite;
 }
 
@@ -605,18 +629,29 @@ button:hover {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   font-size: 1.5rem;
   color: #00fff7;
-  text-shadow: 0 0 10px #00fff7, 0 0 20px #00fff7, 0 0 40px #8c00ff;
+  text-shadow:
+    0 0 10px #00fff7,
+    0 0 20px #00fff7,
+    0 0 40px #8c00ff;
 }
 
 @keyframes rotateHolo {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes spinGlow {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(-360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
 }
