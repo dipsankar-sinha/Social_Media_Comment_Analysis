@@ -7,13 +7,11 @@ from backend.load import *
 
 import json
 import logging
-import os
+
 
 app = FastAPI()
 
-# Directory to store generated graphs
-GRAPH_DIR = "generated_graphs"
-os.makedirs(GRAPH_DIR, exist_ok=True)
+
 
 # Configure CORS Middleware
 app.add_middleware(
@@ -233,12 +231,12 @@ def aggregate_results(results: TextResponse) -> AnalysisResults:
 
     # Construct the result dictionary
     return AnalysisResults(
-        hate_speech={"percentage": (hate_count / total) * 100},
-        sentiment={"positive_percentage": (positive_sentiment_count / total) * 100},
-        fake_news={"percentage": (fake_count / total) * 100},
-        spam={"percentage": (spam_count / total) * 100},
-        emotion={"percentage": EmotionPercentage(**{emotion: (count / total) * 100 for emotion, count in emotion_counts.items()})},
-        topic={"percentage": TopicPercentage(**{topic: (count / total) * 100 for topic, count in topic_counts.items()})},
+        hate_speech={"percentage": round(hate_count / total, 2 ) * 100},
+        sentiment={"positive_percentage": round(positive_sentiment_count / total, 2 ) * 100},
+        fake_news={"percentage": round(fake_count / total, 2 ) * 100},
+        spam={"percentage": round(spam_count / total, 2 ) * 100},
+        emotion={"percentage": EmotionPercentage(**{emotion: round(count / total, 2) * 100 for emotion, count in emotion_counts.items()})},
+        topic={"percentage": TopicPercentage(**{topic: round(count / total , 2) * 100 for topic, count in topic_counts.items()})},
     )
     
 def process_text_with_gemini(request: TextRequest) -> TextResponse:

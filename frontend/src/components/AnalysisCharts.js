@@ -11,13 +11,11 @@ const COLORS = [
   "#32CD32", // Lime Green
 ];
 
-// // Utility function to shuffle colors
-// const shuffleColors = (colors) => [...colors].sort(() => Math.random() - 0.5);
 
-// Shuffling colors for each dataset
+
+// Setting colors for each dataset
 const hateColors = ["#FF4567", "#00C49F"];
 const spamColors = ["#AF19FF", "#FF8042"];
-//const fakeColors = ["#FFBB28", "#32CD32"];
 const sentimentColors = ["#0088FE", "#FF4567"];
 
 const AnalysisChartsCard = ({ analysisCharts }) => {
@@ -33,26 +31,26 @@ const AnalysisChartsCard = ({ analysisCharts }) => {
   const sentimentData = [
     {
       name: "Positive",
-      value: Math.round(analysisCharts.sentiment.positive_percentage),
+      value: analysisCharts.sentiment.positive_percentage,
     },
     {
       name: "Negative",
-      value: Math.round(100 - analysisCharts.sentiment.positive_percentage),
+      value: (100 - analysisCharts.sentiment.positive_percentage),
     },
   ];
   const hateData = [
-    { name: "Hate", value: Math.round(analysisCharts.hate_speech.percentage) },
+    { name: "Hate", value: analysisCharts.hate_speech.percentage },
     {
       name: "Not Hate",
-      value: Math.round(100 - analysisCharts.hate_speech.percentage),
+      value: (100 - analysisCharts.hate_speech.percentage),
     },
   ];
 
   const spamData = [
-    { name: "Spam", value: Math.round(analysisCharts.spam.percentage) },
+    { name: "Spam", value: analysisCharts.spam.percentage },
     {
       name: "Not Spam",
-      value: Math.round(100 - analysisCharts.spam.percentage),
+      value: (100 - analysisCharts.spam.percentage),
     },
   ];
 

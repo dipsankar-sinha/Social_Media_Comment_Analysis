@@ -8,7 +8,7 @@ function Header({ resetState, handleTopListsClick }) {
         <button onClick={resetState} className="nav-button">
           Home
         </button>
-        <button onClick={handleTopListsClick} className="nav-button">
+        <button onClick={ handleTopListsClick} className="nav-button">
           Top Lists
         </button>
       </nav>

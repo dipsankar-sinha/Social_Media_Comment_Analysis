@@ -198,6 +198,8 @@ function App() {
     setShowTopLists(true);
   };
 
+
+
   return (
     <div className="app-container">
       {loading && <Loader />}
