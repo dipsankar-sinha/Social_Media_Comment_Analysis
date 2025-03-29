@@ -56,7 +56,7 @@ const ChannelStatsCard = ({
 
       {subscriberChartData && (
         <div className="subscriber-chart-toggle">
-          <button onClick={toggleChart} className="toggle-button">
+          <button onClick={toggleChart} className="btn">
             {showChart ? "Hide Subscriber Graph ▲" : "Show Subscriber Graph ▼"}
           </button>
           {showChart && (

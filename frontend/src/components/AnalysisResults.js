@@ -1,6 +1,6 @@
 import React from "react";
 
-const AnalysisResultCard = ({ result }) => {
+const AnalysisResultCard = ({ result, fakeAnalysis }) => {
   if (!result) return null; // Prevent render if result is undefined
 
   return (
@@ -25,7 +25,11 @@ const AnalysisResultCard = ({ result }) => {
         <div className="result-item">
           <strong>Sentiment:</strong> {result.sentiment}
         </div>
-        {/*<div className="result-item"><strong>Fake:</strong> {result.fake}</div>*/}
+        {fakeAnalysis && (
+          <div className="result-item">
+            <strong>Fake:</strong> {result.fake}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -51,14 +51,6 @@ function InputPanel({
           value={maxResults}
           onChange={(e) => setMaxResults(e.target.value)}
         />
-        <label>
-          Include Fake News Analysis
-          <input
-            type="checkbox"
-            checked={fakeAnalysis}
-            onChange={(e) => setFakeAnalysis(e.target.checked)}
-          />
-        </label>
         <button onClick={() => handleVideoCommentAnalysis(videoID)}>
           Analyze Video Comments
         </button>

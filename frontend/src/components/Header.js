@@ -2,7 +2,7 @@ import React from "react";
 
 function Header({ resetState, handleTopListsClick }) {
   return (
-    <header className="app-header futuristic-header">
+    <header className="app-header">
       <div className="logo">Social Media Comment Analysis System</div>
       <nav>
         <button onClick={resetState} className="nav-button">

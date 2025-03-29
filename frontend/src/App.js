@@ -20,7 +20,7 @@ function App() {
   const [htmlContent, setHtmlContent] = useState("");
 
   const [inputText, setInputText] = useState("");
-  // const [videoID, setVideoID] = useState("");
+  const [videoID, setVideoID] = useState("");
   const [channelUsername, setChannelUsername] = useState("");
   const [channelID, setChannelID] = useState("");
 
@@ -199,7 +199,7 @@ function App() {
   };
 
   return (
-    <div className="app-container futuristic">
+    <div className="app-container">
       {loading && <Loader />}
       <Header
         resetState={resetState}
@@ -248,12 +248,19 @@ function App() {
                 <h2>Analysis Results</h2>
                 <div className="results-grid">
                   {analysisResults.map((result, index) => (
-                    <AnalysisResults key={index} result={result} />
+                    <AnalysisResults
+                      key={index}
+                      result={result}
+                      fakeAnalysis={fakeAnalysis}
+                    />
                   ))}
                 </div>
                 {analysisCharts && (
-                  <div className="results-section">
-                    <AnalysisCharts analysisCharts={analysisCharts} />
+                  <div className="charts-section">
+                    <h2>Aggregate Statistics</h2>
+                    <div className="results-grid">
+                      <AnalysisCharts analysisCharts={analysisCharts} />
+                    </div>
                   </div>
                 )}
               </div>
