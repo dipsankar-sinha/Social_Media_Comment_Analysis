@@ -1,5 +1,7 @@
 import uvicorn
 import socket
+import subprocess
+import os
 
 
 def get_ip_addresses():
@@ -22,12 +24,25 @@ def get_ip_addresses():
         pass
     return ip_addresses
 
-if __name__ == "__main__":
-    # Get and print local addresses
-    print("Local addresses:")
-    print(" - http://127.0.0.1:8000")
-    for ip in get_ip_addresses():
-        print(f" - http://{ip}:8000")
 
-    # Start the server bound to 0.0.0.0 (listening on all interfaces)
-    uvicorn.run("backend.app:app", host="0.0.0.0", port=8000, reload=True)
+if __name__ == "__main__":
+    # Run npm build inside frontend directory
+    frontend_dir = os.path.join(os.getcwd(), "frontend")
+    if os.path.exists(frontend_dir):
+        try:
+            print("Running npm build in frontend directory...")
+            subprocess.run(["npm.cmd", "run", "build"], cwd=frontend_dir, check=True)
+            print("npm build completed successfully.")
+        except subprocess.CalledProcessError:
+            print("npm build failed. Check for errors.")
+
+        # Get and print local addresses
+        print("Local addresses:")
+        print(" - http://127.0.0.1:8000")
+        for ip in get_ip_addresses():
+            print(f" - http://{ip}:8000")
+
+        # Start the server bound to 0.0.0.0 (listening on all interfaces)
+        uvicorn.run("backend.app:app", host="0.0.0.0", port=8000, reload=True)
+    else:
+        print("Frontend directory not found. Skipping build step.")

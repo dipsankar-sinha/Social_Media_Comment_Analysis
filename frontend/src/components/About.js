@@ -71,8 +71,7 @@ function About() {
             </p>
             <ul>
               <li>
-                <strong>GET /</strong>: A welcome page providing a basic
-                overview.
+                <strong>GET /</strong>: React Web Application
               </li>
               <li>
                 <strong>POST /get_channel_id</strong>: Retrieve a channel
