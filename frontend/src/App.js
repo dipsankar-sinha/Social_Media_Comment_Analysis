@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import DOMPurify from "dompurify";
 
 import "./App.css";
 import Loader from "./Loader";
@@ -11,48 +10,84 @@ import ChannelStatsCard from "./components/ChannelStatsCard";
 import AnalysisResults from "./components/AnalysisResults";
 import AnalysisCharts from "./components/AnalysisCharts";
 import Footer from "./components/Footer";
+import Contact from "./components/Contact";
+import About from "./components/About";
 
 function App() {
+  //axios.defaults.baseURL = "http://localhost:8000"; // Backend URL
+  //Commenting This the frontend and backend in running on same port in same machine.
+  axios.defaults.baseURL = "/";
+
+  //Setting Global Variables
   const [showHomePage, setShowHomePage] = useState(true);
   const [showTopLists, setShowTopLists] = useState(false);
-  const [trendingVideos, setTrendingVideos] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [htmlContent, setHtmlContent] = useState("");
+  const [showResults, setShowResults] = useState(false);
+  const [showAnalysisResults, setShowAnalysisResults] = useState(false);
+  const [showAnalysisCharts, setShowAnalysisCharts] = useState(true);
+  const [showContactPage, setShowContactPage] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
 
+  const [loading, setLoading] = useState(false);
   const [inputText, setInputText] = useState("");
   const [videoID, setVideoID] = useState("");
+
+  const [channelInputType, setChannelInputType] = useState("username");
   const [channelUsername, setChannelUsername] = useState("");
   const [channelID, setChannelID] = useState("");
 
+  const [trendingVideos, setTrendingVideos] = useState([]);
   const [maxResults, setMaxResults] = useState(10);
   const [analysisResults, setAnalysisResults] = useState([]);
   const [analysisCharts, setAnalysisCharts] = useState(null);
   const [channelStats, setChannelStats] = useState(null);
   const [fakeAnalysis, setFakeAnalysis] = useState(false);
-  const [subscriberChartData, setSubscriberChartData] = useState(null);
+
+  const resetState = () => {
+    setShowHomePage(true);
+    setShowTopLists(false);
+    setShowResults(false);
+    setShowAnalysisResults(false);
+    setShowAnalysisCharts(true);
+    setShowContactPage(false);
+    setShowAbout(false);
+
+    setInputText("");
+    setFakeAnalysis(false);
+    setMaxResults(10);
+    setChannelUsername("");
+    setChannelID("");
+    setChannelInputType("username");
+
+    setVideoID("");
+    setAnalysisResults([]);
+    setChannelStats(null);
+    setTrendingVideos([]);
+    setAnalysisCharts(null);
+  };
 
   useEffect(() => {
     const fetchTrendingVideos = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/trending_videos",
-        );
+        const response = await axios.get("/trending_videos");
         setTrendingVideos(response.data.items);
       } catch (error) {
         console.error("Error fetching trending videos:", error);
         alert("Failed to fetch trending videos. Check console.");
       }
     };
-    if (showHomePage) {
+    if (showHomePage || trendingVideos.length === 0) {
       fetchTrendingVideos();
     }
-  }, [showHomePage]);
-
+  }, [showHomePage, trendingVideos.length]);
+  useEffect(
+    () => window.scrollTo(0, 0),
+    [showHomePage, showTopLists, showContactPage, showAbout],
+  );
   const handleTextAnalysis = async () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:8000/comment_analysis",
+        "/comment_analysis",
         {
           texts: inputText.split("\n").filter((text) => text.trim() !== ""),
         },
@@ -61,8 +96,13 @@ function App() {
         },
       );
       setAnalysisResults(response.data.results);
+
+      setChannelStats(null);
       setShowHomePage(false);
       setShowTopLists(false);
+      setShowResults(true);
+      setShowAnalysisResults(true);
+      setShowAnalysisCharts(false);
     } catch (error) {
       console.error("Error analyzing text:", error);
       alert("Failed to analyze text. Check console for details.");
@@ -75,7 +115,7 @@ function App() {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:8000/youtube_comment_analysis",
+        "/youtube_comment_analysis",
         {
           video_id: videoID,
           max_results: maxResults,
@@ -86,8 +126,14 @@ function App() {
       );
       setAnalysisResults(response.data.results);
       setAnalysisCharts(response.data.aggregate_stats);
+
+      setChannelStats(null);
       setShowHomePage(false);
       setShowTopLists(false);
+      setShowAbout(false);
+      setShowResults(true);
+      setShowAnalysisResults(false);
+      setShowAnalysisCharts(true);
     } catch (error) {
       console.error("Error analyzing video comments:", error);
       alert("Failed to analyze video comments. Check console for details.");
@@ -95,79 +141,38 @@ function App() {
       setLoading(false);
     }
   };
-
-  const handleAbout = async (event) => {
-    try {
-      event.preventDefault();
-      setLoading(true);
-      if (htmlContent === "") {
-        let response = await axios.get("http://localhost:8000/");
-        const rawHtml = response.data;
-        const sanitizedHtml = DOMPurify.sanitize(rawHtml);
-        setHtmlContent(sanitizedHtml);
-      } else {
-        setHtmlContent("");
-      }
-      setLoading(false);
-      // setShowHomePage(false);
-      // setShowTopLists(false);
-    } catch (error) {
-      console.error("Error while accessing the information:", error);
-      alert("Failed to access the page. Check console for details.");
-      setHtmlContent("<p>Failed to load content. Please try again.</p>");
-    }
+  const toggleAnalysisCharts = () => {
+    setShowAnalysisCharts((prev) => !prev);
   };
-
+  const toggleAnalysisResults = () => {
+    setShowAnalysisResults((prev) => !prev);
+  };
   const handleChannelStatsFetch = async () => {
     try {
       setLoading(true);
       let response;
-      if (channelID) {
-        response = await axios.post("http://localhost:8000/get_channel_stats", {
+
+      if (channelInputType === "channelID" && channelID) {
+        response = await axios.post("/get_channel_stats", {
           channel_id: channelID,
         });
-      } else if (channelUsername) {
-        response = await axios.post("http://localhost:8000/get_channel_stats", {
+      } else if (channelInputType === "username" && channelUsername) {
+        response = await axios.post("/get_channel_stats", {
           username: channelUsername,
         });
       } else {
-        alert("Please provide either Channel ID or Username.");
+        alert("Please enter a valid input.");
+        setLoading(false);
         return;
       }
+
       setChannelStats(response.data);
-      const labels = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ];
-      const data = labels.map(
-        () =>
-          Math.floor(Math.random() * 10000) +
-          (response.data.subscriber_count || 0),
-      );
-      setSubscriberChartData({
-        labels: labels,
-        datasets: [
-          {
-            label: "Subscriber Growth",
-            data: data,
-            fill: false,
-            borderColor: "rgb(75, 192, 192)",
-            tension: 0.1,
-          },
-        ],
-      });
+
+      setShowResults(true);
       setShowHomePage(false);
       setShowTopLists(false);
+      setShowAbout(false);
+      setShowContactPage(false);
     } catch (error) {
       console.error("Error fetching channel stats:", error);
       alert("Failed to fetch channel stats. Check console for details.");
@@ -176,30 +181,72 @@ function App() {
     }
   };
 
-  const resetState = () => {
-    setInputText("");
-    // setVideoID("");
-    setChannelUsername("");
-    setChannelID("");
-    setMaxResults(10);
-    setAnalysisResults([]);
-    setChannelStats(null);
-    setFakeAnalysis(false);
-    setSubscriberChartData(null);
-    setShowHomePage(true);
-    setShowTopLists(false);
-    setTrendingVideos([]);
-    setHtmlContent("");
-    setAnalysisCharts(null);
+  const handleChannelStatsFetchFromVideoID = async (videoID) => {
+    try {
+      setLoading(true);
+      let response = await axios.post("/get_channel_id", {
+        video_id: videoID,
+      });
+      const newChannelID = response.data.channel_id;
+      if (!newChannelID) {
+        alert("No channel ID found for this video.");
+        return;
+      }
+      let statsResponse = await axios.post("/get_channel_stats", {
+        channel_id: newChannelID,
+      });
+
+      setChannelID(newChannelID);
+      setShowResults(true);
+      setChannelStats(statsResponse.data);
+      setShowHomePage(false);
+      setShowTopLists(false);
+      setShowAbout(false);
+      setShowAbout(false);
+    } catch (error) {
+      console.error("Error fetching channel ID:", error);
+      alert("Failed to fetch channel ID. Check console for details.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleTopListsClick = () => {
     setShowHomePage(false);
     setShowTopLists(true);
+    setShowResults(false);
+    setShowContactPage(false);
+    setShowAbout(false);
   };
 
-
-
+  const handleAbout = async (event) => {
+    try {
+      event.preventDefault();
+      setShowHomePage(false);
+      setShowTopLists(false);
+      setShowContactPage(false);
+      setShowResults(false);
+      setLoading(false);
+      setShowAbout(true);
+    } catch (error) {
+      console.error("Error while accessing the information:", error);
+      alert("Failed to access the page. Check console for details.");
+    }
+  };
+  const handleContact = async (event) => {
+    try {
+      event.preventDefault();
+      setLoading(false);
+      setShowHomePage(false);
+      setShowTopLists(false);
+      setShowResults(false);
+      setShowAbout(false);
+      setShowContactPage(true);
+    } catch (error) {
+      console.error("Error while accessing the contact page:", error);
+      alert("Failed to access the page. Check console for details.");
+    }
+  };
   return (
     <div className="app-container">
       {loading && <Loader />}
@@ -218,6 +265,8 @@ function App() {
             setChannelUsername={setChannelUsername}
             channelID={channelID}
             setChannelID={setChannelID}
+            channelInputType={channelInputType}
+            setChannelInputType={setChannelInputType}
             maxResults={maxResults}
             setMaxResults={setMaxResults}
             fakeAnalysis={fakeAnalysis}
@@ -226,51 +275,77 @@ function App() {
             handleVideoCommentAnalysis={handleVideoCommentAnalysis}
             handleChannelStatsFetch={handleChannelStatsFetch}
           />
-        ) : showTopLists ? (
-          <TrendingVideos
-            trendingVideos={trendingVideos}
-            maxResults={maxResults}
-            setMaxResults={setMaxResults}
-            setVideoID={setVideoID}
-            handleVideoCommentAnalysis={handleVideoCommentAnalysis}
-          />
         ) : (
-          <div className="result-panel">
-            {channelStats && (
-              <ChannelStatsCard
-                channelStats={channelStats}
-                subscriberChartData={subscriberChartData}
-                maxResults={maxResults}
-                setMaxResults={setMaxResults}
-                handleVideoCommentAnalysis={handleVideoCommentAnalysis}
-              />
-            )}
-            {analysisResults.length > 0 && (
-              <div className="results-section">
-                <h2>Analysis Results</h2>
-                <div className="results-grid">
-                  {analysisResults.map((result, index) => (
-                    <AnalysisResults
-                      key={index}
-                      result={result}
-                      fakeAnalysis={fakeAnalysis}
-                    />
-                  ))}
-                </div>
-                {analysisCharts && (
-                  <div className="charts-section">
-                    <h2>Aggregate Statistics</h2>
+          (showTopLists && (
+            <TrendingVideos
+              trendingVideos={trendingVideos}
+              maxResults={maxResults}
+              setMaxResults={setMaxResults}
+              setVideoID={setVideoID}
+              handleVideoCommentAnalysis={handleVideoCommentAnalysis}
+              handleChannelStatsFetchFromVideoID={
+                handleChannelStatsFetchFromVideoID
+              }
+            />
+          )) ||
+          (showResults && (
+            <div className="result-panel">
+              {channelStats && (
+                <ChannelStatsCard
+                  channelStats={channelStats}
+                  maxResults={maxResults}
+                  setMaxResults={setMaxResults}
+                  handleVideoCommentAnalysis={handleVideoCommentAnalysis}
+                />
+              )}
+              {analysisResults.length > 0 && (
+                <div className="results-section">
+                  <button onClick={toggleAnalysisResults} className="dropdown">
+                    {showAnalysisResults ? (
+                      <h2>Analysis Results ▲</h2>
+                    ) : (
+                      <h2>Analysis Results ▼</h2>
+                    )}
+                  </button>
+                  {showAnalysisResults && (
                     <div className="results-grid">
-                      <AnalysisCharts analysisCharts={analysisCharts} />
+                      {analysisResults.map((result, index) => (
+                        <AnalysisResults
+                          key={index}
+                          result={result}
+                          fakeAnalysis={fakeAnalysis}
+                        />
+                      ))}
                     </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+                  )}
+                  {analysisCharts && (
+                    <div className="charts-section">
+                      <button
+                        onClick={toggleAnalysisCharts}
+                        className="dropdown"
+                      >
+                        {showAnalysisCharts ? (
+                          <h2>Aggregate Statistics ▲</h2>
+                        ) : (
+                          <h2>Aggregate Statistics ▼</h2>
+                        )}
+                      </button>
+                      {showAnalysisCharts && (
+                        <div className="results-grid">
+                          <AnalysisCharts analysisCharts={analysisCharts} />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ))
         )}
+        {showContactPage && <Contact />}
+        {showAbout && <About />}
       </main>
-      <Footer handleAbout={handleAbout} htmlContent={htmlContent} />
+      <Footer handleAbout={handleAbout} handleContact={handleContact} />
     </div>
   );
 }

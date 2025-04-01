@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from backend.clean_text import *
 from backend.load import *
@@ -8,10 +8,11 @@ from backend.load import *
 import json
 import logging
 
-
 app = FastAPI()
 
 
+#Here Frontend and Backend will be on same device and same port
+#SO, No need of CORS Middleware
 
 # Configure CORS Middleware
 app.add_middleware(
@@ -32,7 +33,7 @@ hate_classifier = load_hate_classifier()
 sentiment_classifier = load_sentiment_classifier()
 
 # Loading Gemini Model
-gemini_model = load_gemini_model()
+gemini_model = load_gemini_model("gemini-2.0-flash")
 
 # Loading YouTube V3 API
 youtube = load_youtube_v3()
@@ -50,6 +51,7 @@ class VideoRequest(BaseModel):
 class ChannelRequest(BaseModel): 
     username: str | None = None
     channel_id: str | None = None
+    video_id: str | None = None
   
 
 # Different YouTube Response and format types <--- YouTube V3 API
@@ -119,25 +121,42 @@ class FinalAnalysisResponse(BaseModel):
     aggregate_stats: AnalysisResults | None
 
 # Function to fetch YouTube channel statistics
-def fetch_channel_id(username: str) -> str:
+def fetch_channel_id(username: str = None, video_id: str = None) -> str:
     """Fetch channel ID using YouTube handle (@username)"""
     try:
-        # Ensure handle starts with @
-        if not username.startswith("@"):
-            username = f"@{username.lstrip('@')}"
+        if username:
+            # Ensure handle starts with @
+            if not username.startswith("@"):
+                username = f"@{username.lstrip('@')}"
 
-        request = youtube.channels().list(
-            part="id",
-            forHandle=username.strip()  # Correct parameter for handles
-        )
-        response = request.execute()
+            request = youtube.channels().list(
+                part="id",
+                forHandle=username.strip()  # Correct parameter for handles
+            )
+            response = request.execute()
 
-        if not response.get("items"):
-            logger.error(f"No channel found for handle: {username}")
-            raise HTTPException(status_code=404, detail="Channel not found")
-            
-        return response["items"][0]["id"]
-        
+            if not response.get("items"):
+                logger.error(f"No channel found for handle: {username}")
+                raise HTTPException(status_code=404, detail="Channel not found")
+
+            return response["items"][0]["id"]
+
+        elif video_id:
+            # Fetch video details
+            request = youtube.videos().list(
+                part="snippet",
+                id=video_id
+            )
+            response = request.execute()
+            if not response.get("items"):
+                logger.error(f"No channel found for handle: {username}")
+                raise HTTPException(status_code=404, detail="Channel not found")
+            return response["items"][0]["snippet"]["channelId"]
+
+        else:
+            logger.error("Invalid input, Try again!")
+            raise HTTPException(status_code=404, detail="Invalid input, Try again!")
+
     except HTTPException as he:
         raise he
     except Exception as e:
@@ -231,12 +250,12 @@ def aggregate_results(results: TextResponse) -> AnalysisResults:
 
     # Construct the result dictionary
     return AnalysisResults(
-        hate_speech={"percentage": round(hate_count / total, 2 ) * 100},
-        sentiment={"positive_percentage": round(positive_sentiment_count / total, 2 ) * 100},
-        fake_news={"percentage": round(fake_count / total, 2 ) * 100},
-        spam={"percentage": round(spam_count / total, 2 ) * 100},
-        emotion={"percentage": EmotionPercentage(**{emotion: round(count / total, 2) * 100 for emotion, count in emotion_counts.items()})},
-        topic={"percentage": TopicPercentage(**{topic: round(count / total , 2) * 100 for topic, count in topic_counts.items()})},
+        hate_speech={"percentage": round(hate_count / total * 100, 2)},
+        sentiment={"positive_percentage": round(positive_sentiment_count / total * 100, 2 )},
+        fake_news={"percentage": round(fake_count / total * 100, 2 )},
+        spam={"percentage": round(spam_count / total * 100, 2 )},
+        emotion={"percentage": EmotionPercentage(**{emotion: round(count / total * 100, 2) for emotion, count in emotion_counts.items()})},
+        topic={"percentage": TopicPercentage(**{topic: round(count / total * 100, 2) for topic, count in topic_counts.items()})},
     )
     
 def process_text_with_gemini(request: TextRequest) -> TextResponse:
@@ -386,24 +405,23 @@ def process_fake_news(request: TextRequest | TextResponse) -> TextResponse:
     )
 
 # ===== API Endpoints =====
-@app.get("/")
-def info():
-    logger.info("Information page accessed")
-    # Serve the HTML file
-    return FileResponse("backend/info.html")
-
 @app.post("/get_channel_id", response_model=ChannelIDResponse)
 def get_channel_id(request: ChannelRequest):
-    if not request.username:
-        raise HTTPException(400, "Username required")
-    return {"channel_id": fetch_channel_id(request.username)}
+    if request.video_id:
+        return {"channel_id": fetch_channel_id(video_id = request.video_id)}
+    if request.username:
+        return {"channel_id": fetch_channel_id(username=request.username)}
+    raise HTTPException(400, "Either username or video-id required")
+
 
 @app.post("/get_channel_stats", response_model=ChannelStatsResponse)
 def get_channel_stats(request: ChannelRequest):
     if request.channel_id:
         return fetch_channel_stats(request.channel_id)
     if request.username:
-        return fetch_channel_stats(fetch_channel_id(request.username))
+        return fetch_channel_stats(fetch_channel_id(username=request.username))
+    if request.video_id:
+        return fetch_channel_stats(fetch_channel_id(video_id=request.video_id))
     raise HTTPException(400, "Provide channel_id or username")
 
 # Function to fetch YouTube comments
@@ -534,4 +552,10 @@ def get_trending_videos():
     except Exception as e:
         logging.error(f"Error fetching trending videos: {e} - Response: {response if 'response' in locals() else 'No response'}") # added response to the log.
         raise HTTPException(status_code=500, detail="Failed to fetch trending videos.")
+
+
+#Serve React build directory ---> Frontend EndPoint
+app.mount("/", StaticFiles(directory="./frontend/build", html=True), name="frontend")
+
+
     

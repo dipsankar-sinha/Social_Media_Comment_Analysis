@@ -1,37 +1,11 @@
-import React, { useState } from "react";
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
-
-ChartJS.register(
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend,
-);
+import React from "react";
 
 const ChannelStatsCard = ({
   channelStats,
-  subscriberChartData,
   maxResults,
   setMaxResults,
   handleVideoCommentAnalysis,
 }) => {
-  const [showChart, setShowChart] = useState(false);
-
-  const toggleChart = () => {
-    setShowChart((prev) => !prev);
-  };
-
   return (
     <div className="channel-stats-card">
       <h3>Channel Statistics</h3>
@@ -53,20 +27,6 @@ const ChannelStatsCard = ({
       <p>
         <strong>Views:</strong> {channelStats.view_count}
       </p>
-
-      {subscriberChartData && (
-        <div className="subscriber-chart-toggle">
-          <button onClick={toggleChart} className="btn">
-            {showChart ? "Hide Subscriber Graph ▲" : "Show Subscriber Graph ▼"}
-          </button>
-          {showChart && (
-            <div className="subscriber-chart">
-              <h4>Subscriber Growth</h4>
-              <Line data={subscriberChartData} />
-            </div>
-          )}
-        </div>
-      )}
 
       {channelStats.videos && channelStats.videos.length > 0 && (
         <div className="result-card">

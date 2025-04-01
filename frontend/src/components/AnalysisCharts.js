@@ -11,8 +11,6 @@ const COLORS = [
   "#32CD32", // Lime Green
 ];
 
-
-
 // Setting colors for each dataset
 const hateColors = ["#FF4567", "#00C49F"];
 const spamColors = ["#AF19FF", "#FF8042"];
@@ -35,14 +33,14 @@ const AnalysisChartsCard = ({ analysisCharts }) => {
     },
     {
       name: "Negative",
-      value: (100 - analysisCharts.sentiment.positive_percentage),
+      value: 100 - analysisCharts.sentiment.positive_percentage,
     },
   ];
   const hateData = [
     { name: "Hate", value: analysisCharts.hate_speech.percentage },
     {
       name: "Not Hate",
-      value: (100 - analysisCharts.hate_speech.percentage),
+      value: 100 - analysisCharts.hate_speech.percentage,
     },
   ];
 
@@ -50,7 +48,7 @@ const AnalysisChartsCard = ({ analysisCharts }) => {
     { name: "Spam", value: analysisCharts.spam.percentage },
     {
       name: "Not Spam",
-      value: (100 - analysisCharts.spam.percentage),
+      value: 100 - analysisCharts.spam.percentage,
     },
   ];
 

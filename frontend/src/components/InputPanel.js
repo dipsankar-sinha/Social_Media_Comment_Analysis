@@ -11,6 +11,8 @@ function InputPanel({
   setChannelUsername,
   channelID,
   setChannelID,
+  channelInputType,
+  setChannelInputType,
   fakeAnalysis,
   setFakeAnalysis,
   handleTextAnalysis,
@@ -58,18 +60,49 @@ function InputPanel({
 
       <div className="input-section">
         <h2>YouTube Channel Statistics</h2>
-        <input
-          type="text"
-          placeholder="Channel Username (@username)"
-          value={channelUsername}
-          onChange={(e) => setChannelUsername(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Channel ID"
-          value={channelID}
-          onChange={(e) => setChannelID(e.target.value)}
-        />
+        <div className="radio-options">
+          <label>
+            <input
+              type="radio"
+              name="channelInput"
+              value="username"
+              checked={channelInputType === "username"}
+              onChange={() => {
+                setChannelInputType("username");
+                setChannelID("");
+              }}
+            />
+            Username
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="channelInput"
+              value="channelID"
+              checked={channelInputType === "channelID"}
+              onChange={() => {
+                setChannelInputType("channelID");
+                setChannelUsername("");
+              }}
+            />
+            Channel ID
+          </label>
+        </div>
+        {channelInputType === "username" ? (
+          <input
+            type="text"
+            placeholder="Channel Username (@username)"
+            value={channelUsername}
+            onChange={(e) => setChannelUsername(e.target.value)}
+          />
+        ) : (
+          <input
+            type="text"
+            placeholder="Channel ID"
+            value={channelID}
+            onChange={(e) => setChannelID(e.target.value)}
+          />
+        )}
         <button onClick={handleChannelStatsFetch}>Fetch Channel Stats</button>
       </div>
     </div>

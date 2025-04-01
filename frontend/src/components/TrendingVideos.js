@@ -5,6 +5,7 @@ function TrendingVideos({
   maxResults,
   setMaxResults,
   handleVideoCommentAnalysis,
+  handleChannelStatsFetchFromVideoID,
 }) {
   return (
     <div className="result-panel">
@@ -29,6 +30,12 @@ function TrendingVideos({
             >
               Watch on YouTube
             </a>
+            <button
+              className={"btn"}
+              onClick={() => handleChannelStatsFetchFromVideoID(video.id)}
+            >
+              Fetch Channel Stats
+            </button>
             <label>
               Select No. Of Comments:
               <input
@@ -39,7 +46,7 @@ function TrendingVideos({
               />
             </label>
             <button
-              className="btn"
+              className={"btn"}
               onClick={() => {
                 //setVideoID(video.id); // Update the video ID state
                 handleVideoCommentAnalysis(video.id); // Trigger the comment analysis function

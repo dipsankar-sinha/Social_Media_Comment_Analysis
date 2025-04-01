@@ -2,7 +2,6 @@ import React from "react";
 
 const AnalysisResultCard = ({ result, fakeAnalysis }) => {
   if (!result) return null; // Prevent render if result is undefined
-
   return (
     <div className="result-card">
       <div className="result-header">

@@ -47,24 +47,6 @@ def preprocess_bangla_text(text):
     text = re.sub(r'\s+', ' ', text).strip()
 
     return text
-import re
-
-# Sample API data
-data = {
-    "texts": [
-        "দেবদা সবচেয়ে সেরা ❤❤❤❤",
-        "বরবাদ 🔥🔥🔥",
-        "দেব দা ❤🔥💯 রघु ডাকাত 🔥🔥💯💯❤",
-        "Ei sob kicchu r moddhe AWARAPAN 2 ANNOUNCEMENT Niye kicchu bolo please...❤❤❤❤🎉🎉🎉🎉",
-        "আপনি আগের চেয়ে অনেক পরিবর্তন হয়েছেন,আপনার রিভিউ অনেক যোগ্যতা সম্পন্ন হয় এবং অনেক ভালো হয়।অসংখ্য ধন্যবাদ।",
-        "<a href=\"https://www.youtube.com/watch?v=LsdYVlJQn_U&amp;t=472\">7:52</a><br>Adhidhu surpriseu একটা r2pe promoting গান",
-        "Anurag Kashyap er Bombay Velvet er onek scenes gulo ke cut kora hoyechilo, coz CBFC er tokhon er head er Kashyap er songe personal beef chilo...😶",
-        "দাদা ধূমকেতু আসবে না মনেহয়.... দেব দা রানা সরকার এর সাথে ছবি ডিলিট করে দিয়েছে",
-        "<a href=\"https://www.youtube.com/watch?v=LsdYVlJQn_U&amp;t=340\">5:40</a> Yash Nussrat&#39;s Kichu Kotha Song Review from Aarii Movie",
-        "Borbad chai",
-    ]
-}
-
 
 def clean_api_texts(texts):
     """

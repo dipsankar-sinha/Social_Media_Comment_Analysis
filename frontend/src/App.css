@@ -1,31 +1,31 @@
-
 /* ====================================================
    1. FONT IMPORT & BASE SETUP
    ==================================================== */
 
-/* Import futuristic font (prioritized) */
-@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap");
+/* Import Montserrat*/
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap");
 
 /* ====================================================
    2. BASE STYLES
    ==================================================== */
 
-/* Base styles for body and futuristic elements */
-
-body {
-  font-family: "Orbitron", sans-serif;
+/* Base styles for body element */
+html {
+  box-sizing: border-box;
   background: #1a1a1a;
+}
+body {
+  font-family: "Montserrat", sans-serif;
   background-size: 400% 400%;
   animation: gradientShift 20s ease infinite;
   color: #ffffff;
   min-height: 100vh;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
   transition: background 0.5s ease;
 }
 
-/* Gradient Animation (common to both files) */
+/* Gradient Animation */
 @keyframes gradientShift {
   0% {
     background-position: 0% 50%;
@@ -43,21 +43,23 @@ body {
    ==================================================== */
 
 /* Logo Styles */
-/* Conflict: Prioritize Futuristic.css version */
 .logo {
   display: flex;
   justify-content: left;
-  font-size: 2rem;
+  font-size: 2.25rem;
   font-weight: bold;
 }
 
-/* Additional typography rules from App.css */
+/* Additional typography rules */
+h2 {
+  font-size: 1.75rem;
+}
 .result-header {
   margin-bottom: 12px;
 }
 
 .original-text {
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: bold;
   margin-bottom: 4px;
 }
@@ -75,7 +77,6 @@ body {
 .app-header {
   background: #0f0f0fe5;
   border-bottom: 1px solid #ffffff;
-  /* Converted 15px 30px to rem: 15px ≈ 0.94rem, 30px ≈ 1.88rem */
   padding: 0.94rem 1.88rem;
   display: flex;
   justify-content: space-between;
@@ -83,20 +84,17 @@ body {
 }
 
 /* --- Navigation Buttons & Links --- */
-
-/* Navigation rules from Futuristic.css (prioritized for .nav-button and .nav-link) */
 .nav-button,
 .nav-link {
   display: inline;
   background: transparent;
   color: #00b7ff;
   border: 1px solid #00b7ff;
-  /* Converted margin: 0 8px to 0 0.63rem; padding: 6px 14px to 0.38rem 0.88rem (approx.) */
   margin: 0 0.63rem;
-  padding: 0.38rem 0.88rem;
+  padding: 0.5rem 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  border-radius: 6px;
+  border-radius: 0.6rem;
   text-decoration: none;
   font-weight: bold;
 }
@@ -113,16 +111,14 @@ body {
    ==================================================== */
 
 /* --- Main Content --- */
-/* Conflict: Prioritize Futuristic.css version */
 .main-content {
   display: flex;
   flex-direction: row;
-  /* Converted 30px to 1.88rem and gap 20px to 1.25rem */
   padding: 1.88rem;
   gap: 1.25rem;
 }
 
-/* --- Left & Right Panels (Futuristic.css) --- */
+/* --- Input & Right Panels --- */
 .input-panel,
 .result-panel {
   display: flex;
@@ -131,7 +127,6 @@ body {
   background: #1801300c;
   border: 1px solid #ccc;
   border-radius: 2rem;
-  /* Converted 20px padding to 1.25rem */
   padding: 2rem;
 }
 
@@ -140,7 +135,6 @@ body {
    ==================================================== */
 
 /* --- Input Section Container --- */
-/* Using container style from App.css; nested element rules come later */
 .input-section {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid #00b7ff;
@@ -156,11 +150,10 @@ body {
   transform: scale(1.03);
 }
 
-/* --- Input Section (Nested Element Styles from Futuristic.css) --- */
+/* --- Input Section --- */
 .input-section h2 {
   display: block;
   margin-bottom: 1.25rem;
-  /*text-shadow: 0 0 5px #00ffe7;*/
 }
 
 .input-section input[type="text"],
@@ -168,13 +161,12 @@ body {
 .input-section textarea {
   display: block;
   color: #cccccc;
-  font-family: "Orbitron", sans-serif;
-  /* For Futuristic, width is set to 90% for textarea and 60% for text/number fields */
+  font-family: "Montserrat", sans-serif;
   width: 90%;
   background: #0f0f0fe5;
   margin-bottom: 1.25rem;
   padding: 0.5rem;
-  border: 1px solid #ccc;
+  border: 1px solid #cccccc;
   border-radius: 0.5rem;
   outline: none;
 }
@@ -183,7 +175,6 @@ body {
 .input-section input[type="number"] {
   height: 1.5rem;
   width: 60%;
-  gap: 0;
 }
 
 .input-section textarea {
@@ -193,20 +184,25 @@ body {
 .input-section label {
   display: flex;
   flex-direction: row;
-  gap: 2rem;
+  gap: 1rem;
   padding: 0;
   margin-bottom: 1.25rem;
   text-align: left;
   font-size: 1rem;
 }
-
-/* --- Input Section Button (Futuristic.css prioritized) --- */
-/* Converted padding 10px 20px to approx. 0.63rem 1.25rem */
+.input-section input[type="checkbox"] {
+  display: flex;
+  flex-direction: row;
+  scale: 1.25;
+  margin-top: 0.25rem;
+  padding: 0;
+}
+/* --- Input Section Button --- */
 .input-section button {
   display: block;
   margin-bottom: 1.25rem;
   padding: 0.63rem 1.25rem;
-  font-family: "Orbitron", sans-serif;
+  font-family: "Montserrat", sans-serif;
   background: #00b7ff;
   color: #0f0f0f;
   border: none;
@@ -225,21 +221,17 @@ body {
 }
 
 /* --- Result Card --- */
-/* Conflict: Prioritize Futuristic.css version for base styling */
 .result-card {
   background: rgba(15, 15, 15, 0.85);
   border: 1px solid #cccccc;
-  /* Futuristic.css uses 10px border-radius; retain that but converted to rem: 10px ≈ 0.63rem */
   border-radius: 0.63rem;
-  /* Converted padding: 15px to 0.94rem */
   padding: 0.94rem;
   box-shadow: 0 0 0.5rem rgba(0, 183, 255, 0.4);
 }
 
-/* Include hover effect from App.css (non-conflicting as base style is from Futuristic) */
 .result-card:hover {
-  transform: translateY(-0.25rem); /* 4px ≈ 0.25rem */
-  box-shadow: 0 0.375rem 0.94rem rgba(0, 183, 255, 0.4); /* 6px and 15px converted */
+  transform: translateY(-0.25rem);
+  box-shadow: 0 0.375rem 0.94rem rgba(0, 183, 255, 0.4);
 }
 
 .result-details {
@@ -252,7 +244,7 @@ body {
   background-color: rgba(0, 247, 255, 0.05);
   padding: 8px;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: #c0f0ff;
 }
 .video-list .youtube-videos-card {
@@ -262,14 +254,15 @@ body {
   height: 45vh;
   width: 90%;
 }
-.charts-section{
+.charts-section {
   display: block;
   margin-top: 3rem;
 }
 .charts-section h2 {
   margin-bottom: 2rem;
 }
-.charts-container {
+.charts-container,
+.contacts-container {
   display: grid;
   margin-left: 1rem;
   grid-template-columns: repeat(auto-fill, minmax(90vh, 1fr));
@@ -286,25 +279,21 @@ body {
   padding-bottom: 4rem;
   background: rgba(15, 15, 15, 0.85);
   border: 1px solid #cccccc;
-  /* Futuristic.css uses 10px border-radius; retain that but converted to rem: 10px ≈ 0.63rem */
   border-radius: 0.63rem;
   box-shadow: 0 0 0.5rem #00b7ff;
-  position: relative;
 }
 .chart:hover {
-  transform: translateY(-0.25rem); /* 4px ≈ 0.25rem */
-  box-shadow: 0 0.375rem 0.94rem rgba(0, 183, 255, 0.4); /* 6px and 15px converted */
+  transform: translateY(-0.25rem);
+  box-shadow: 0 0.375rem 0.94rem rgba(0, 183, 255, 0.4);
 }
-.chart h3{
+.chart h3 {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   font-size: 1.5rem;
   padding-top: 1rem;
-  position: relative;
   margin-left: 0;
   margin-bottom: 0;
-  /*padding-left: 10rem;*/
 }
 
 /* --- Trending Video Card --- */
@@ -315,8 +304,8 @@ body {
   padding-bottom: 0.5rem;
   font-size: 1.5rem;
 }
-/* Conflict: Prioritize Futuristic.css version */
-.youtube-videos-card {
+.youtube-videos-card,
+.contact-card {
   display: flex;
   width: 95%;
   background: rgba(15, 15, 15, 0.8);
@@ -325,25 +314,37 @@ body {
   padding: 1rem;
   margin-left: 0.5rem;
   margin-bottom: 2rem;
-  box-shadow: 0 0 0.5rem #00b7ff;
+  box-shadow: 0 0 0.5rem rgba(0, 183, 255, 0.4);
   transition: transform 0.3s;
 }
-.youtube-videos-card div {
+.contact-card{
+  margin:0;
+  width: 80%;
+}
+.youtube-videos-card div,
+.contact-card div {
   display: block;
   padding: 1rem;
 }
-.youtube-videos-card:hover {
+.youtube-videos-card:hover,
+.contact-card:hover {
   transform: scale(1.03);
 }
 .youtube-videos-card img {
   width: 50%;
-  /* Converted border-radius 8px to 0.5rem; margin-bottom 10px to 0.63rem */
   border-radius: 0.5rem;
   margin-bottom: 0.63rem;
 }
-.youtube-videos-card a {
+.contact-card img {
+  height: 50vh;
+  width: 40vh;
+  border-radius: 0.5rem;
+  margin-bottom: 0.63rem;
+}
+.youtube-videos-card a,
+.contact-card a {
   display: block;
-  width: 30vh;
+  width: 50%;
   margin-bottom: 1.25rem;
   padding: 0.63rem 1.25rem;
   background: #f42c2c;
@@ -357,12 +358,20 @@ body {
   transition: all 0.3s ease;
   animation: glowPulse 2s infinite;
 }
-
+.contact-card a {
+  background: #00b7ff;
+}
 .youtube-videos-card a:hover {
   background: #cccccc;
   color: #f42c2c;
   border: 1px solid #f42c2c;
-  box-shadow: 0 0 10px #f42c2c;
+  box-shadow: 0 0 10px rgba(244, 44, 44, 0.4);
+}
+.contact-card a:hover {
+  background: #cccccc;
+  color: #00b7ff;
+  border: 1px solid #00b7ff;
+  box-shadow: 0 0 10px rgba(0, 183, 255, 0.4);
 }
 .youtube-videos-card input[type="number"] {
   display: inline;
@@ -372,10 +381,12 @@ body {
   padding: 0.15rem;
   width: 10%;
 }
-.btn {
+/* --- Button and Dropdown for Result and Trending Section--- */
+.btn,
+.dropdown {
   display: block;
   width: 50%;
-  font-family: "Orbitron", sans-serif;
+  font-family: "Montserrat", sans-serif;
   margin-bottom: 1.25rem;
   padding: 0.63rem 1.25rem;
   background: #00b7ff;
@@ -389,7 +400,19 @@ body {
   transition: all 0.3s ease;
   animation: glowPulse 2s infinite;
 }
-
+.dropdown {
+  margin-left: 47vh;
+}
+.dropdown h2 {
+  margin: 0;
+  padding: 0;
+}
+.dropdown:hover {
+  background: #cccccc;
+  color: #004c7e;
+  border: 1px solid #004c7e;
+  box-shadow: 0 0 10px rgba(0, 76, 126, 0.4);
+}
 .btn:hover {
   background: #0f0f0f;
   color: #00b7ff;
@@ -398,60 +421,65 @@ body {
 }
 
 /* --- Channel Stats Card --- */
-/* Conflict: Prioritize Futuristic.css version */
+/* --- Channel Stats Card Container --- */
 .channel-stats-card {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid #00b7ff;
-  /* Converted border-radius 12px to 0.75rem */
   border-radius: 0.75rem;
-  /* Converted padding 20px to 1.25rem; margin-bottom 20px to 1.25rem */
   padding: 1.25rem;
   margin-bottom: 1.25rem;
   box-shadow: 0 0 15px rgba(0, 183, 255, 0.4);
   backdrop-filter: blur(8px);
+  line-height: 1.5;
 }
 
-/* --- Subscriber Chart --- */
-/* Merged duplicate definitions from App.css */
-.subscriber-chart {
-  /* Using background, border-radius, and padding from the first definition */
-  background: rgba(0, 183, 255, 0.1);
-  border-radius: 0.75rem;
-  padding: 1rem;
-  /* Using the later margin-top value; converted 15px to approx. 0.94rem */
-  margin-top: 0.94rem;
+/* --- Channel Stats Card Heading --- */
+.channel-stats-card h3 {
+  color: #cccccc;
+  font-size: 1.75rem;
+  padding-top: 0;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
 }
 
-/* --- Additional Result Components (from App.css) --- */
+/* --- Paragraph Spacing --- */
+.channel-stats-card p {
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
 
+/* --- Highlight the strong text --- */
+.channel-stats-card p strong {
+  color: #00b7ff;
+  margin-right: 0.25rem;
+}
+
+.channel-stats-card .result-card {
+  margin-top: 2rem;
+}
 
 /* ====================================================
    7. FOOTER
    ==================================================== */
 
 /* --- App Footer --- */
-/* Conflict: Prioritize Futuristic.css version */
 .app-footer {
   text-align: center;
-  /* Converted padding 15px to 0.94rem */
   padding: 0.94rem;
   background: #0f0f0fe5;
   border-top: 1px solid #ffffff;
-  /*box-shadow: 0 -0.125rem 0.63rem #d39d58; !* 2px and 10px converted *!*/
 }
 
 /* --- Footer Links --- */
-/* Conflict: Prioritize Futuristic.css version */
 .footer-links a {
   color: #00b7ff;
-  /* Converted margin 0 10px to 0 0.63rem */
   margin: 0 0.63rem;
   text-decoration: none;
   transition: all 0.3s ease;
 }
 
 .footer-links a:hover {
-  text-shadow: 0 0 8px #00b7ff;
+  text-shadow: 0 0 8px rgba(0, 183, 255, 0.4);
 }
 
 /* ====================================================
@@ -472,7 +500,6 @@ body {
 }
 
 .loader {
-  /* Two definitions exist in Futuristic.css; merged and converted pixel values */
   border: 8px solid rgba(0, 183, 255, 0.2);
   border-top: 8px solid #00b7ff;
   border-radius: 50%;
@@ -480,9 +507,9 @@ body {
   height: 80px;
   animation: spin 1s linear infinite;
   box-shadow:
-    0 0 15px #00b7ff,
-    0 0 30px #00b7ff,
-    0 0 60px #00b7ff;
+    0 0 15px rgba(0, 183, 255, 0.4),
+    0 0 30px rgba(0, 183, 255, 0.4),
+    0 0 60px rgba(0, 183, 255, 0.4);
 }
 
 /* Spinner Animation */
@@ -520,8 +547,7 @@ body {
     rgba(0, 183, 255, 0.1),
     rgba(0, 0, 0, 0.5)
   );
-  box-shadow:
-    inset 0 0 30px #00b7ff;
+  box-shadow: inset 0 0 30px rgba(0, 183, 255, 0.4);
   animation: rotateHolo 2s linear infinite;
 }
 
@@ -530,7 +556,12 @@ body {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, rgba(0, 183, 255, 0.7), rgba(0, 0, 0, 0), rgba(204, 204, 204, 0.7));
+  background: conic-gradient(
+    from 0deg,
+    rgba(0, 183, 255, 0.7),
+    rgba(0, 0, 0, 0),
+    rgba(204, 204, 204, 0.7)
+  );
   filter: blur(15px);
   animation: spinGlow 4s linear infinite;
   opacity: 0.6;
@@ -541,13 +572,13 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-family: "Orbitron", sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 1.5rem;
   color: #cccccc;
   text-shadow:
-    0 0 10px #00b7ff,
+    0 0 10px rgba(0, 183, 255, 0.4),
     0 0 20px #00000000,
-    0 0 40px #cccccc;
+    0 0 40px rgba(204, 204, 204, 0.4);
 }
 
 @keyframes rotateHolo {
@@ -567,3 +598,68 @@ body {
     transform: rotate(-360deg);
   }
 }
+
+
+/* Base styles for the about page */
+.about {
+  font-family: "Montserrat", sans-serif;
+  padding: 2rem;
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+/* Header styling */
+.about header h2 {
+  font-size: 1.75rem;
+  border-bottom: 2px solid #00b7ff;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Container styling */
+.about .container {
+  padding: 1rem;
+}
+
+/* Section headings */
+.about section h3 {
+  font-size: 1.5rem;
+  color: #00b7ff;
+  border-bottom: 1px solid #ffffff;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Paragraph and list styling */
+.about section p,
+.about section li {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+.about section ul,
+.about section ol {
+  padding-left: 1.5rem;
+}
+
+/* Features grid */
+.about .features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.about .feature {
+  background: rgba(15, 15, 15, 0.85);
+  border: 1px solid #cccccc;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  flex: 1 1 calc(50% - 1rem);
+}
+
+/*!* Responsive adjustments *!*/
+/*@media (max-width: 600px) {*/
+/*  .about .feature {*/
+/*    flex: 1 1 100%;*/
+/*  }*/
+/*}*/
