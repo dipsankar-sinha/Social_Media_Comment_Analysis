@@ -1,294 +1,351 @@
-// src/App.js
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+import "./App.css";
+import Loader from "./Loader";
+import Header from "./components/Header";
+import InputPanel from "./components/InputPanel";
+import TrendingVideos from "./components/TrendingVideos";
+import ChannelStatsCard from "./components/ChannelStatsCard";
+import AnalysisResults from "./components/AnalysisResults";
+import AnalysisCharts from "./components/AnalysisCharts";
+import Footer from "./components/Footer";
+import Contact from "./components/Contact";
+import About from "./components/About";
 
 function App() {
-  const [inputText, setInputText] = useState('');
-  const [videoID, setVideoID] = useState('');
-  const [channelUsername, setChannelUsername] = useState('');
-  const [channelID, setChannelID] = useState('');
-  const [maxResults, setMaxResults] = useState(50);
-  const [analysisResults, setAnalysisResults] = useState([]);
-  const [channelStats, setChannelStats] = useState(null);
-  const [fakeAnalysis, setFakeAnalysis] = useState(false);
-  const [subscriberChartData, setSubscriberChartData] = useState(null);
+  //axios.defaults.baseURL = "http://localhost:8000"; // Backend URL
+  //Commenting This the frontend and backend in running on same port in same machine.
+  axios.defaults.baseURL = "/";
+
+  //Setting Global Variables
   const [showHomePage, setShowHomePage] = useState(true);
   const [showTopLists, setShowTopLists] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const [showAnalysisResults, setShowAnalysisResults] = useState(false);
+  const [showAnalysisCharts, setShowAnalysisCharts] = useState(true);
+  const [showContactPage, setShowContactPage] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+  const [inputText, setInputText] = useState("");
+  const [videoID, setVideoID] = useState("");
+
+  const [channelInputType, setChannelInputType] = useState("username");
+  const [channelUsername, setChannelUsername] = useState("");
+  const [channelID, setChannelID] = useState("");
+
   const [trendingVideos, setTrendingVideos] = useState([]);
-  const [darkMode, setDarkMode] = useState(true);
+  const [maxResults, setMaxResults] = useState(10);
+  const [analysisResults, setAnalysisResults] = useState([]);
+  const [analysisCharts, setAnalysisCharts] = useState(null);
+  const [channelStats, setChannelStats] = useState(null);
+  const [fakeAnalysis, setFakeAnalysis] = useState(false);
+
+  const resetState = () => {
+    setShowHomePage(true);
+    setShowTopLists(false);
+    setShowResults(false);
+    setShowAnalysisResults(false);
+    setShowAnalysisCharts(true);
+    setShowContactPage(false);
+    setShowAbout(false);
+
+    setInputText("");
+    setFakeAnalysis(false);
+    setMaxResults(10);
+    setChannelUsername("");
+    setChannelID("");
+    setChannelInputType("username");
+
+    setVideoID("");
+    setAnalysisResults([]);
+    setChannelStats(null);
+    setTrendingVideos([]);
+    setAnalysisCharts(null);
+  };
 
   useEffect(() => {
     const fetchTrendingVideos = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/trending_videos');
+        const response = await axios.get("/trending_videos");
         setTrendingVideos(response.data.items);
       } catch (error) {
-        console.error('Error fetching trending videos:', error);
-        alert('Failed to fetch trending videos. Check console.');
+        console.error("Error fetching trending videos:", error);
+        alert("Failed to fetch trending videos. Check console.");
       }
     };
-    if (showHomePage) {
+    if (showHomePage || trendingVideos.length === 0) {
       fetchTrendingVideos();
     }
-  }, [showHomePage]);
-
+  }, [showHomePage, trendingVideos.length]);
+  useEffect(
+    () => window.scrollTo(0, 0),
+    [showHomePage, showTopLists, showContactPage, showAbout],
+  );
   const handleTextAnalysis = async () => {
     try {
-      const response = await axios.post('http://localhost:8000/comment_analysis', {
-        texts: inputText.split('\n').filter(text => text.trim() !== ''),
-      }, {
-        params: {
-          fake_analysis: fakeAnalysis,
+      setLoading(true);
+      const response = await axios.post(
+        "/comment_analysis",
+        {
+          texts: inputText.split("\n").filter((text) => text.trim() !== ""),
         },
-      });
+        {
+          params: { fake_analysis: fakeAnalysis },
+        },
+      );
       setAnalysisResults(response.data.results);
+
+      setChannelStats(null);
       setShowHomePage(false);
       setShowTopLists(false);
+      setShowResults(true);
+      setShowAnalysisResults(true);
+      setShowAnalysisCharts(false);
     } catch (error) {
-      console.error('Error analyzing text:', error);
-      alert('Failed to analyze text. Check console for details.');
+      console.error("Error analyzing text:", error);
+      alert("Failed to analyze text. Check console for details.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleVideoCommentAnalysis = async () => {
+  const handleVideoCommentAnalysis = async (videoID) => {
     try {
-      const response = await axios.post('http://localhost:8000/youtube_comment_analysis', {
-        video_id: videoID,
-        max_results: parseInt(maxResults),
-      }, {
-        params: {
-          fake_analysis: fakeAnalysis,
+      setLoading(true);
+      const response = await axios.post(
+        "/youtube_comment_analysis",
+        {
+          video_id: videoID,
+          max_results: maxResults,
         },
-      });
+        {
+          params: { fake_analysis: fakeAnalysis },
+        },
+      );
       setAnalysisResults(response.data.results);
+      setAnalysisCharts(response.data.aggregate_stats);
+
+      setChannelStats(null);
       setShowHomePage(false);
       setShowTopLists(false);
+      setShowAbout(false);
+      setShowResults(true);
+      setShowAnalysisResults(false);
+      setShowAnalysisCharts(true);
     } catch (error) {
-      console.error('Error analyzing video comments:', error);
-      alert('Failed to analyze video comments. Check console for details.');
+      console.error("Error analyzing video comments:", error);
+      alert("Failed to analyze video comments. Check console for details.");
+    } finally {
+      setLoading(false);
     }
   };
-
+  const toggleAnalysisCharts = () => {
+    setShowAnalysisCharts((prev) => !prev);
+  };
+  const toggleAnalysisResults = () => {
+    setShowAnalysisResults((prev) => !prev);
+  };
   const handleChannelStatsFetch = async () => {
     try {
+      setLoading(true);
       let response;
-      if (channelID) {
-        response = await axios.post('http://localhost:8000/get_channel_stats', {
+
+      if (channelInputType === "channelID" && channelID) {
+        response = await axios.post("/get_channel_stats", {
           channel_id: channelID,
         });
-      } else if (channelUsername) {
-        response = await axios.post('http://localhost:8000/get_channel_stats', {
+      } else if (channelInputType === "username" && channelUsername) {
+        response = await axios.post("/get_channel_stats", {
           username: channelUsername,
         });
       } else {
-        alert('Please provide either Channel ID or Username.');
+        alert("Please enter a valid input.");
+        setLoading(false);
         return;
       }
+
       setChannelStats(response.data);
-      const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Aug','Sep','Oct','Nov','Dec'];
-      const data = labels.map(() => Math.floor(Math.random() * 10000) + (response.data.subscriber_count || 0));
-      setSubscriberChartData({
-        labels: labels,
-        datasets: [{
-          label: 'Subscriber Growth',
-          data: data,
-          fill: false,
-          borderColor: 'rgb(75, 192, 192)',
-          tension: 0.1,
-        }],
-      });
+
+      setShowResults(true);
       setShowHomePage(false);
       setShowTopLists(false);
+      setShowAbout(false);
+      setShowContactPage(false);
     } catch (error) {
-      console.error('Error fetching channel stats:', error);
-      alert('Failed to fetch channel stats. Check console for details.');
+      console.error("Error fetching channel stats:", error);
+      alert("Failed to fetch channel stats. Check console for details.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const resetState = () => {
-    setInputText('');
-    setVideoID('');
-    setChannelUsername('');
-    setChannelID('');
-    setMaxResults(50);
-    setAnalysisResults([]);
-    setChannelStats(null);
-    setFakeAnalysis(false);
-    setSubscriberChartData(null);
-    setShowHomePage(true);
-    setShowTopLists(false);
-    setTrendingVideos([]);
+  const handleChannelStatsFetchFromVideoID = async (videoID) => {
+    try {
+      setLoading(true);
+      let response = await axios.post("/get_channel_id", {
+        video_id: videoID,
+      });
+      const newChannelID = response.data.channel_id;
+      if (!newChannelID) {
+        alert("No channel ID found for this video.");
+        return;
+      }
+      let statsResponse = await axios.post("/get_channel_stats", {
+        channel_id: newChannelID,
+      });
+
+      setChannelID(newChannelID);
+      setShowResults(true);
+      setChannelStats(statsResponse.data);
+      setShowHomePage(false);
+      setShowTopLists(false);
+      setShowAbout(false);
+      setShowAbout(false);
+    } catch (error) {
+      console.error("Error fetching channel ID:", error);
+      alert("Failed to fetch channel ID. Check console for details.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleTopListsClick = () => {
     setShowHomePage(false);
     setShowTopLists(true);
+    setShowResults(false);
+    setShowContactPage(false);
+    setShowAbout(false);
   };
 
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
+  const handleAbout = async (event) => {
+    try {
+      event.preventDefault();
+      setShowHomePage(false);
+      setShowTopLists(false);
+      setShowContactPage(false);
+      setShowResults(false);
+      setLoading(false);
+      setShowAbout(true);
+    } catch (error) {
+      console.error("Error while accessing the information:", error);
+      alert("Failed to access the page. Check console for details.");
+    }
   };
-
+  const handleContact = async (event) => {
+    try {
+      event.preventDefault();
+      setLoading(false);
+      setShowHomePage(false);
+      setShowTopLists(false);
+      setShowResults(false);
+      setShowAbout(false);
+      setShowContactPage(true);
+    } catch (error) {
+      console.error("Error while accessing the contact page:", error);
+      alert("Failed to access the page. Check console for details.");
+    }
+  };
   return (
-    <div className={`app-container ${darkMode ? "dark-mode" : ""}`}>
-      <header className="app-header">
-        <div className="logo">Your Logo</div>
-        <div className="search-bar">
-          <input type="text" placeholder="Search..." />
-          <button>Search</button>
-        </div>
-        <nav>
-          <button onClick={resetState}>Home</button>
-          <button onClick={handleTopListsClick}>Top Lists</button>
-          <button className="dark-mode-toggle" onClick={toggleDarkMode}>
-            {darkMode ? "Light" : "Dark"}
-          </button>
-          <a href="/resources">Resources</a>
-          <a href="/login">Login</a>
-        </nav>
-      </header>
-
+    <div className="app-container">
+      {loading && <Loader />}
+      <Header
+        resetState={resetState}
+        handleTopListsClick={handleTopListsClick}
+      />
       <main className="main-content">
         {showHomePage ? (
-          <div className="left-panel">
-            <div className="input-section">
-              <h2>Text Analysis</h2>
-              <textarea
-                placeholder="Enter text to analyze (one per line)"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-              />
-              <label>
-                <input
-                  type="checkbox"
-                  checked={fakeAnalysis}
-                  onChange={(e) => setFakeAnalysis(e.target.checked)}
-                />
-                Include Fake News Analysis
-              </label>
-              <button onClick={handleTextAnalysis}>Analyze Text</button>
-            </div>
-
-            <div className="input-section">
-              <h2>YouTube Video Comment Analysis</h2>
-              <input
-                type="text"
-                placeholder="YouTube Video ID"
-                value={videoID}
-                onChange={(e) => setVideoID(e.target.value)}
-              />
-              <input
-                type="number"
-                placeholder="Max Results (default 50)"
-                value={maxResults}
-                onChange={(e) => setMaxResults(e.target.value)}
-              />
-              <label>
-                <input
-                  type="checkbox"
-                  checked={fakeAnalysis}
-                  onChange={(e) => setFakeAnalysis(e.target.checked)}
-                />
-                Include Fake News Analysis
-              </label>
-              <button onClick={handleVideoCommentAnalysis}>Analyze Video Comments</button>
-            </div>
-
-            <div className="input-section">
-              <h2>YouTube Channel Statistics</h2>
-              <input
-                type="text"
-                placeholder="Channel Username (@username)"
-                value={channelUsername}
-                onChange={(e) => setChannelUsername(e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Channel ID"
-                value={channelID}
-                onChange={(e) => setChannelID(e.target.value)}
-              />
-              <button onClick={handleChannelStatsFetch}>Fetch Channel Stats</button>
-            </div>
-          </div>
-        ) : showTopLists ? (
-          <div className="right-panel">
-            <h2>Trending YouTube Videos</h2>
-            {trendingVideos.map((video) => (
-              <div key={video.id} className="trending-video-card">
-                <img src={video.snippet.thumbnails.medium.url} alt={video.snippet.title} />
-                <h3>{video.snippet.title}</h3>
-                <p>{video.snippet.description}</p>
-                <a href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
-              </div>
-            ))}
-          </div>
+          <InputPanel
+            inputText={inputText}
+            setInputText={setInputText}
+            videoID={videoID}
+            setVideoID={setVideoID}
+            channelUsername={channelUsername}
+            setChannelUsername={setChannelUsername}
+            channelID={channelID}
+            setChannelID={setChannelID}
+            channelInputType={channelInputType}
+            setChannelInputType={setChannelInputType}
+            maxResults={maxResults}
+            setMaxResults={setMaxResults}
+            fakeAnalysis={fakeAnalysis}
+            setFakeAnalysis={setFakeAnalysis}
+            handleTextAnalysis={handleTextAnalysis}
+            handleVideoCommentAnalysis={handleVideoCommentAnalysis}
+            handleChannelStatsFetch={handleChannelStatsFetch}
+          />
         ) : (
-          <div className="right-panel">
-            {channelStats && (
-              <div className="channel-stats-card">
-                <h3>Channel Statistics</h3>
-                <p><strong>Channel ID:</strong> {channelStats.channel_id}</p>
-                <p><strong>Title:</strong> {channelStats.title}</p>
-                <p><strong>Description:</strong> {channelStats.description}</p>
-                <p><strong>Subscribers:</strong> {channelStats.subscriber_count}</p>
-                <p><strong>Videos:</strong> {channelStats.video_count}</p>
-                <p><strong>Views:</strong> {channelStats.view_count}</p>
-                {subscriberChartData && (
-                  <div className="subscriber-chart">
-                    <Line data={subscriberChartData} />
-                  </div>
-                )}
-              </div>
-            )}
-
-{showHomePage && (
-  <div className="popular-creators">
-    <h2>Popular YouTube Creators</h2>
-    <div className="results-grid">
-      <div>Test 1</div>
-      <div>Test 2</div>
-    </div>
-  </div>
-)}
-      
-
-            {analysisResults.length > 0 && (
-              <div className="results-section">
-                <h2>Analysis Results</h2>
-                <div className="results-grid">
-                  {analysisResults.map((result, index) => (
-                    <div key={index} className="result-card">
-                      <p><strong>Original:</strong> {result.original_text}</p>
-                      <p><strong>Converted:</strong> {result.converted_text}</p>
-                      <p><strong>Topic:</strong> {result.topic}</p>
-                      <p><strong>Emotion:</strong> {result.emotion}</p>
-                      <p><strong>Spam:</strong> {result.spam}</p>
-                      <p><strong>Hate:</strong> {result.hate}</p>
-                      <p><strong>Sentiment:</strong> {result.sentiment}</p>
-                      <p><strong>Fake:</strong> {result.fake}</p>
+          (showTopLists && (
+            <TrendingVideos
+              trendingVideos={trendingVideos}
+              maxResults={maxResults}
+              setMaxResults={setMaxResults}
+              setVideoID={setVideoID}
+              handleVideoCommentAnalysis={handleVideoCommentAnalysis}
+              handleChannelStatsFetchFromVideoID={
+                handleChannelStatsFetchFromVideoID
+              }
+            />
+          )) ||
+          (showResults && (
+            <div className="result-panel">
+              {channelStats && (
+                <ChannelStatsCard
+                  channelStats={channelStats}
+                  maxResults={maxResults}
+                  setMaxResults={setMaxResults}
+                  handleVideoCommentAnalysis={handleVideoCommentAnalysis}
+                />
+              )}
+              {analysisResults.length > 0 && (
+                <div className="results-section">
+                  <button onClick={toggleAnalysisResults} className="dropdown">
+                    {showAnalysisResults ? (
+                      <h2>Analysis Results ▲</h2>
+                    ) : (
+                      <h2>Analysis Results ▼</h2>
+                    )}
+                  </button>
+                  {showAnalysisResults && (
+                    <div className="results-grid">
+                      {analysisResults.map((result, index) => (
+                        <AnalysisResults
+                          key={index}
+                          result={result}
+                          fakeAnalysis={fakeAnalysis}
+                        />
+                      ))}
                     </div>
-                  ))}
+                  )}
+                  {analysisCharts && (
+                    <div className="charts-section">
+                      <button
+                        onClick={toggleAnalysisCharts}
+                        className="dropdown"
+                      >
+                        {showAnalysisCharts ? (
+                          <h2>Aggregate Statistics ▲</h2>
+                        ) : (
+                          <h2>Aggregate Statistics ▼</h2>
+                        )}
+                      </button>
+                      {showAnalysisCharts && (
+                        <div className="results-grid">
+                          <AnalysisCharts analysisCharts={analysisCharts} />
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          ))
         )}
+        {showContactPage && <Contact />}
+        {showAbout && <About />}
       </main>
-
-      <footer className="app-footer">
-        <p>&copy; 2025 Your Company</p>
-        <div className="footer-links">
-          <a href="/terms">Terms</a>
-          <a href="/privacy">Privacy</a>
-          <a href="/contact">Contact</a>
-        </div>
-      </footer>
+      <Footer handleAbout={handleAbout} handleContact={handleContact} />
     </div>
   );
 }

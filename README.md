@@ -34,5 +34,6 @@ Now, run the following command in the Terminal.**
 ## npm install axios
 ## from fastapi.middleware.cors import CORSMiddleware
 
+npm install dompurify
 **Will Update this soon.</br>
 Stay Tuned :)**

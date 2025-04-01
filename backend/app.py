@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from backend.clean_text import preprocess_bangla_text, preprocess_bangla_fake_news
+from backend.clean_text import *
 from backend.load import *
 
 import json
@@ -10,10 +10,14 @@ import logging
 
 app = FastAPI()
 
+
+#Here Frontend and Backend will be on same device and same port
+#SO, No need of CORS Middleware
+
 # Configure CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Allows requests from React app
+    allow_origins=["*"],  # Allows requests from all origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -29,7 +33,7 @@ hate_classifier = load_hate_classifier()
 sentiment_classifier = load_sentiment_classifier()
 
 # Loading Gemini Model
-gemini_model = load_gemini_model()
+gemini_model = load_gemini_model("gemini-2.0-flash")
 
 # Loading YouTube V3 API
 youtube = load_youtube_v3()
@@ -41,12 +45,13 @@ class TextRequest(BaseModel):
 # Video Request type ---> YouTube V3 API
 class VideoRequest(BaseModel):
     video_id: str
-    max_results: int = 50
+    max_results: int = 10
 
 # Channel Request type ---> YouTube V3 API
 class ChannelRequest(BaseModel): 
     username: str | None = None
     channel_id: str | None = None
+    video_id: str | None = None
   
 
 # Different YouTube Response and format types <--- YouTube V3 API
@@ -57,6 +62,7 @@ class ChannelStatsResponse(BaseModel):
     subscriber_count: int | None = None
     video_count: int
     view_count: int
+    videos: list[dict] | None = None
 
 class ChannelIDResponse(BaseModel):
     channel_id: str
@@ -83,32 +89,74 @@ class TextAnalysisFormat(BaseModel):
 class TextResponse(BaseModel):
     results: list[TextAnalysisFormat]
 
-@app.get("/")
-def info():
-    logger.info("Information page accessed")
-    # Serve the HTML file
-    return FileResponse("backend/info.html")
+class EmotionPercentage(BaseModel):
+    Happy: float
+    Sad: float
+    Angry: float
+    Fearful: float
+    Surprised: float
+    Neutral: float
+
+class TopicPercentage(BaseModel):
+    Politics: float
+    Sports: float
+    Entertainment: float
+    Technology: float
+    Business: float
+    Health: float
+    Education: float
+    Other: float
+
+class AnalysisResults(BaseModel):
+    hate_speech: dict[str, float]  # e.g., {"percentage": value}
+    sentiment: dict[str, float]  # e.g., {"positive_percentage": value}
+    fake_news: dict[str, float]  # e.g., {"percentage": value}
+    spam: dict[str, float]  # e.g., {"percentage": value}
+    emotion: dict[str, EmotionPercentage]  # e.g., {"percentage": EmotionPercentage(...) }
+    topic: dict[str, TopicPercentage]  # e.g., {"percentage": TopicPercentage(...) }
+
+#Response type <--- Final Analysis Report
+class FinalAnalysisResponse(BaseModel):
+    results: list[TextAnalysisFormat]
+    aggregate_stats: AnalysisResults | None
 
 # Function to fetch YouTube channel statistics
-def fetch_channel_id(username: str) -> str:
+def fetch_channel_id(username: str = None, video_id: str = None) -> str:
     """Fetch channel ID using YouTube handle (@username)"""
     try:
-        # Ensure handle starts with @
-        if not username.startswith("@"):
-            username = f"@{username.lstrip('@')}"
+        if username:
+            # Ensure handle starts with @
+            if not username.startswith("@"):
+                username = f"@{username.lstrip('@')}"
 
-        request = youtube.channels().list(
-            part="id",
-            forHandle=username.strip()  # Correct parameter for handles
-        )
-        response = request.execute()
+            request = youtube.channels().list(
+                part="id",
+                forHandle=username.strip()  # Correct parameter for handles
+            )
+            response = request.execute()
 
-        if not response.get("items"):
-            logger.error(f"No channel found for handle: {username}")
-            raise HTTPException(status_code=404, detail="Channel not found")
-            
-        return response["items"][0]["id"]
-        
+            if not response.get("items"):
+                logger.error(f"No channel found for handle: {username}")
+                raise HTTPException(status_code=404, detail="Channel not found")
+
+            return response["items"][0]["id"]
+
+        elif video_id:
+            # Fetch video details
+            request = youtube.videos().list(
+                part="snippet",
+                id=video_id
+            )
+            response = request.execute()
+            if not response.get("items"):
+                logger.error(f"No channel found for handle: {username}")
+                raise HTTPException(status_code=404, detail="Channel not found")
+            return response["items"][0]["snippet"]["channelId"]
+
+        else:
+            logger.error("Invalid input, Try again!")
+            raise HTTPException(status_code=404, detail="Invalid input, Try again!")
+
     except HTTPException as he:
         raise he
     except Exception as e:
@@ -132,13 +180,17 @@ def fetch_channel_stats(channel_id: str) -> ChannelStatsResponse:
         snippet = data["snippet"]
         stats = data.get("statistics", {})
 
-        return ChannelStatsResponse(
+        # Fetch recent videos
+        videos = fetch_channel_videos(channel_id)
+
+        return ChannelStatsResponse (
             channel_id=channel_id,
             title=snippet["title"],
             description=snippet.get("description", ""),
             subscriber_count=int(stats["subscriberCount"]) if "subscriberCount" in stats else None,
             video_count=int(stats.get("videoCount", 0)),
-            view_count=int(stats.get("viewCount", 0))
+            view_count=int(stats.get("viewCount", 0)),
+            videos=videos, # Add videos to the response
         )
 
     except HTTPException as he:
@@ -147,63 +199,64 @@ def fetch_channel_stats(channel_id: str) -> ChannelStatsResponse:
         logger.error(f"Stats Fetch Error: {str(e)}")
         raise HTTPException(status_code=500, detail="Statistics fetch failed")
     
-
-# ===== API Endpoints =====
-@app.post("/get_channel_id", response_model=ChannelIDResponse)
-def get_channel_id(request: ChannelRequest):
-    if not request.username:
-        raise HTTPException(400, "Username required")
-    return {"channel_id": fetch_channel_id(request.username)}
-
-@app.post("/get_channel_stats", response_model=ChannelStatsResponse)
-def get_channel_stats(request: ChannelRequest):
-    if request.channel_id:
-        return fetch_channel_stats(request.channel_id)
-    if request.username:
-        return fetch_channel_stats(fetch_channel_id(request.username))
-    raise HTTPException(400, "Provide channel_id or username")
-
-# Function to fetch YouTube comments
-def fetch_youtube_comments(video_id: str, max_results: int = 50):
+def fetch_channel_videos(channel_id: str, max_results: int = 5) -> list[dict]:
+    """Fetch recent videos from a channel."""
     try:
-        request = youtube.commentThreads().list(
+        request = youtube.search().list(
             part="snippet",
-            videoId=video_id,
-            maxResults=max_results
+            channelId=channel_id,
+            order="date",
+            type="video",
+            maxResults=max_results,
         )
         response = request.execute()
-        comments = [
-            item["snippet"]["topLevelComment"]["snippet"]["textDisplay"]
-            for item in response.get("items", [])
-        ]
-        return comments
+        videos = []
+        for item in response.get("items", []):
+            videos.append({
+                "video_id": item["id"]["videoId"],
+                "title": item["snippet"]["title"],
+                "thumbnail": item["snippet"]["thumbnails"],
+            })
+        return videos
     except Exception as e:
-        logger.error(f"Error fetching comments: {e}")
-        raise HTTPException(status_code=500, detail="Failed to fetch YouTube comments.")
+        logger.error(f"Video Fetch Error: {str(e)}")
+        return []
 
-@app.post("/fetch_youtube_comments")
-def get_youtube_comments(request: VideoRequest) -> TextRequest:
-    comments = fetch_youtube_comments(request.video_id, request.max_results)
-    return TextRequest(texts=comments)
+def aggregate_results(results: TextResponse) -> AnalysisResults:
+    """Aggregate classification results into percentages for all features."""
+    total = len(results.results)
+    emotions = ['Happy', 'Sad', 'Angry', 'Fearful', 'Surprised', 'Neutral']
+    topics = ['Politics', 'Sports', 'Entertainment', 'Technology', 'Business', 'Health', 'Education', 'Other']
 
-@app.post("/youtube_comment_analysis", response_model=TextResponse)
-def youtube_comment_analysis(request: VideoRequest, fake_analysis: bool = False) -> TextResponse:
-    try:
-        # Fetch YouTube comments
-        comments = fetch_youtube_comments(request.video_id, request.max_results)
-        text_request = TextRequest(texts=comments)
+    if total == 0:
+        return AnalysisResults(
+            hate_speech={"percentage": 0},
+            sentiment={"positive_percentage": 0},
+            fake_news={"percentage": 0},
+            spam={"percentage": 0},
+            emotion={"percentage": EmotionPercentage(**{emotion: 0 for emotion in emotions})},
+            topic={"percentage": TopicPercentage(**{topic: 0 for topic in topics})},
+        )
 
-        # Process comments
-        results = process_text_with_gemini(text_request)
-        results = process_hate(results)
-        results = process_sentiment(results)
-        if fake_analysis:
-            results = process_fake_news(results)
-        return results
-    except Exception as e:
-        logger.error(f"Error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-    
+    # Aggregate counts
+    hate_count = sum(1 for r in results.results if r.hate == 'Hate')
+    positive_sentiment_count = sum(1 for r in results.results if r.sentiment == 'Positive')
+    fake_count = sum(1 for r in results.results if r.fake == 'Fake')
+    spam_count = sum(1 for r in results.results if r.spam == 'Spam')
+
+    # Aggregate counts for emotions and topics
+    emotion_counts = {emotion: sum(1 for r in results.results if r.emotion == emotion) for emotion in emotions}
+    topic_counts = {topic: sum(1 for r in results.results if r.topic == topic) for topic in topics}
+
+    # Construct the result dictionary
+    return AnalysisResults(
+        hate_speech={"percentage": round(hate_count / total * 100, 2)},
+        sentiment={"positive_percentage": round(positive_sentiment_count / total * 100, 2 )},
+        fake_news={"percentage": round(fake_count / total * 100, 2 )},
+        spam={"percentage": round(spam_count / total * 100, 2 )},
+        emotion={"percentage": EmotionPercentage(**{emotion: round(count / total * 100, 2) for emotion, count in emotion_counts.items()})},
+        topic={"percentage": TopicPercentage(**{topic: round(count / total * 100, 2) for topic, count in topic_counts.items()})},
+    )
     
 def process_text_with_gemini(request: TextRequest) -> TextResponse:
     prompt = f"""
@@ -351,8 +404,81 @@ def process_fake_news(request: TextRequest | TextResponse) -> TextResponse:
         results=results
     )
 
-#Calling Gemini API to handle English and Code_Switched or Romanized Bengali
+# ===== API Endpoints =====
+@app.post("/get_channel_id", response_model=ChannelIDResponse)
+def get_channel_id(request: ChannelRequest):
+    if request.video_id:
+        return {"channel_id": fetch_channel_id(video_id = request.video_id)}
+    if request.username:
+        return {"channel_id": fetch_channel_id(username=request.username)}
+    raise HTTPException(400, "Either username or video-id required")
 
+
+@app.post("/get_channel_stats", response_model=ChannelStatsResponse)
+def get_channel_stats(request: ChannelRequest):
+    if request.channel_id:
+        return fetch_channel_stats(request.channel_id)
+    if request.username:
+        return fetch_channel_stats(fetch_channel_id(username=request.username))
+    if request.video_id:
+        return fetch_channel_stats(fetch_channel_id(video_id=request.video_id))
+    raise HTTPException(400, "Provide channel_id or username")
+
+# Function to fetch YouTube comments
+def fetch_youtube_comments(video_id: str, max_results: int = 10):
+    try:
+        request = youtube.commentThreads().list(
+            part="snippet",
+            videoId=video_id,
+            maxResults=max_results
+        )
+        response = request.execute()
+        comments = [
+            item["snippet"]["topLevelComment"]["snippet"]["textDisplay"]
+            for item in response.get("items", [])
+        ]
+        return clean_api_texts(comments) #Applying initial cleaning
+    except Exception as e:
+        logger.error(f"Error fetching comments: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch YouTube comments.")
+
+@app.post("/fetch_youtube_comments")
+def get_youtube_comments(request: VideoRequest) -> TextRequest:
+    comments = fetch_youtube_comments(request.video_id, request.max_results)
+    return TextRequest(texts=comments)
+
+
+@app.post("/youtube_comment_analysis", response_model=FinalAnalysisResponse)
+def youtube_comment_analysis(request: VideoRequest, fake_analysis: bool = False) -> FinalAnalysisResponse:
+    try:
+        logger.error(f"Video_id : {request.video_id}, Max Results: {request.max_results}")
+        # Fetch YouTube comments
+        comments = fetch_youtube_comments(request.video_id, request.max_results)
+        text_request = TextRequest(texts=comments)
+
+        # Process comments
+        results = process_text_with_gemini(text_request)
+        results = process_hate(results)
+        results = process_sentiment(results)
+
+        if fake_analysis:
+            results = process_fake_news(results)
+
+        # Ensure results are in the correct format
+        if isinstance(results, TextResponse):
+            # Add aggregated statistics
+            aggregated_stats = aggregate_results(results)
+            # Return the response
+            return FinalAnalysisResponse(results=results.results, aggregate_stats=aggregated_stats)
+        else:
+            raise HTTPException(status_code=500, detail="Failed to fetch YouTube comments.")
+
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+#Calling Gemini API to handle English and Code_Switched or Romanized Bengali
 @app.post('/analyze_texts_with_gemini', response_model=TextResponse)
 def analyze_texts_with_gemini(request: TextRequest) -> TextResponse:
     try:
@@ -426,7 +552,10 @@ def get_trending_videos():
     except Exception as e:
         logging.error(f"Error fetching trending videos: {e} - Response: {response if 'response' in locals() else 'No response'}") # added response to the log.
         raise HTTPException(status_code=500, detail="Failed to fetch trending videos.")
+
+
+#Serve React build directory ---> Frontend EndPoint
+app.mount("/", StaticFiles(directory="./frontend/build", html=True), name="frontend")
+
+
     
-
-
-

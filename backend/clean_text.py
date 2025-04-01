@@ -47,3 +47,34 @@ def preprocess_bangla_text(text):
     text = re.sub(r'\s+', ' ', text).strip()
 
     return text
+
+def clean_api_texts(texts):
+    """
+        Cleans a list of text strings by removing:
+          - HTML tags (e.g., <a>, <br>)
+          - HTML entities (e.g., &amp;, &#39;)
+          - URLs (starting with http, https, or www)
+          - Timestamps (e.g., 7:52, 5:40)
+          - Extra whitespace
+
+        Args:
+            texts (list): A list of text strings.
+
+        Returns:
+            list: A list of cleaned text strings.
+        """
+    cleaned_texts = []
+    for text in texts:
+        # Remove HTML tags
+        text = re.sub(r'<[^>]+>', '', text)
+        # Remove HTML entities like &amp;, &#39;
+        text = re.sub(r'&\w+;', '', text)
+        # Remove URLs (starting with http, https, or www)
+        text = re.sub(r'(http|https|www)\S+', '', text)
+        # Remove timestamps in the form of "7:52" or "12:34"
+        text = re.sub(r'\d{1,2}:\d{2}', '', text)
+        # Remove extra whitespace
+        text = re.sub(r'\s+', ' ', text).strip()
+        cleaned_texts.append(text)
+    return cleaned_texts
+

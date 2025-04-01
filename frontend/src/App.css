@@ -1,373 +1,677 @@
-/* src/App.css */
-/* ---------- CSS Variables for Light & Dark Themes ---------- */
-:root {
-  --primary-color: #007bff;
-  --primary-hover: #0056b3;
-  --text-light: #333;
-  --bg-light: #f9f9f9;
-  --header-bg-light: #f0f0f0;
-  --card-bg-light: #fff;
-  --border-light: #ddd;
-  --shadow-light: 0 2px 6px rgba(0, 0, 0, 0.1);
+/* ====================================================
+   1. FONT IMPORT & BASE SETUP
+   ==================================================== */
 
-  --text-dark: #e0e0e0;
-  --bg-dark: #121212;
-  --header-bg-dark: #1f1f1f;
-  --card-bg-dark: #1e1e1e;
-  --border-dark: #444;
-  --shadow-dark: 0 2px 6px rgba(255, 255, 255, 0.05);
+/* Import Montserrat*/
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap");
+
+/* ====================================================
+   2. BASE STYLES
+   ==================================================== */
+
+/* Base styles for body element */
+html {
+  box-sizing: border-box;
+  background: #1a1a1a;
 }
-
-/* ---------- Global Styles ---------- */
 body {
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--bg-light);
-  color: var(--text-light);
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.dark-mode body {
-  background-color: var(--bg-dark);
-  color: var(--text-dark);
-}
-
-/* Root container that toggles dark mode */
-.app-container {
-  display: flex;
-  flex-direction: column;
+  font-family: "Montserrat", sans-serif;
+  background-size: 400% 400%;
+  animation: gradientShift 20s ease infinite;
+  color: #ffffff;
   min-height: 100vh;
-  background-color: var(--bg-light);
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-.app-container.dark-mode {
-  background-color: var(--bg-dark);
-  color: var(--text-dark);
+  margin: 0;
+  padding: 0;
+  transition: background 0.5s ease;
 }
 
-/* ---------- Header Styles ---------- */
-.app-header {
+/* Gradient Animation */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* ====================================================
+   3. TYPOGRAPHY
+   ==================================================== */
+
+/* Logo Styles */
+.logo {
   display: flex;
-  flex-wrap: wrap;
+  justify-content: left;
+  font-size: 2.25rem;
+  font-weight: bold;
+}
+
+/* Additional typography rules */
+h2 {
+  font-size: 1.75rem;
+}
+.result-header {
+  margin-bottom: 12px;
+}
+
+.original-text {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.converted-text {
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+/* ====================================================
+   4. HEADER & NAVIGATION
+   ==================================================== */
+
+/* --- App Header  --- */
+.app-header {
+  background: #0f0f0fe5;
+  border-bottom: 1px solid #ffffff;
+  padding: 0.94rem 1.88rem;
+  display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
-  background-color: var(--header-bg-light);
-  box-shadow: var(--shadow-light);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-.app-container.dark-mode .app-header {
-  background-color: var(--header-bg-dark);
-  box-shadow: var(--shadow-dark);
 }
 
-.logo {
-  font-weight: bold;
-  font-size: 1.8rem;
-  color: var(--text-light);
-  margin-right: 20px;
-  transition: color 0.3s ease;
-}
-.app-container.dark-mode .logo {
-  color: var(--text-dark);
-}
-
-/* Search Bar */
-.search-bar {
-  display: flex;
-  align-items: center;
-  margin: 5px 0;
-}
-.search-bar input {
-  padding: 8px 12px;
-  border: 1px solid var(--border-light);
-  border-radius: 4px 0 0 4px;
-  outline: none;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-.app-container.dark-mode .search-bar input {
-  background-color: #333;
-  border: 1px solid var(--border-dark);
-  color: var(--text-dark);
-}
-.search-bar button {
-  padding: 8px 15px;
-  background-color: var(--primary-color);
-  color: #fff;
-  border: none;
-  border-radius: 0 4px 4px 0;
+/* --- Navigation Buttons & Links --- */
+.nav-button,
+.nav-link {
+  display: inline;
+  background: transparent;
+  color: #00b7ff;
+  border: 1px solid #00b7ff;
+  margin: 0 0.63rem;
+  padding: 0.5rem 1rem;
   cursor: pointer;
-  outline: none;
-  transition: background-color 0.3s ease;
-}
-.search-bar button:hover {
-  background-color: var(--primary-hover);
-}
-.app-container.dark-mode .search-bar button {
-  background-color: var(--primary-hover);
-}
-
-/* Navigation */
-nav {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-nav a,
-nav button {
-  color: var(--text-light);
-  background: none;
-  border: none;
-  font-weight: 500;
+  transition: all 0.3s ease;
+  border-radius: 0.6rem;
   text-decoration: none;
-  cursor: pointer;
-  transition: color 0.3s ease;
-  font-size: 0.95rem;
-}
-nav a:hover,
-nav button:hover {
-  color: var(--primary-color);
-}
-.app-container.dark-mode nav a,
-.app-container.dark-mode nav button {
-  color: var(--text-dark);
-}
-.app-container.dark-mode nav a:hover,
-.app-container.dark-mode nav button:hover {
-  color: var(--primary-hover);
+  font-weight: bold;
 }
 
-/* Dark Mode Toggle Button */
-.dark-mode-toggle {
-  border: 1px solid var(--border-light);
-  border-radius: 4px;
-  padding: 5px 10px;
-}
-.app-container.dark-mode .dark-mode-toggle {
-  border: 1px solid var(--border-dark);
+.nav-button:hover,
+.nav-link:hover {
+  background: #00b7ff;
+  color: #0f0f0f;
+  box-shadow: 0 0 10px rgba(0, 183, 255, 0.4);
 }
 
-/* ---------- Main Content ---------- */
+/* ====================================================
+   5. MAIN CONTENT LAYOUT
+   ==================================================== */
+
+/* --- Main Content --- */
 .main-content {
-  flex-grow: 1;
-  padding: 20px;
-  background-color: var(--bg-light);
-  transition: background-color 0.3s ease;
-}
-.app-container.dark-mode .main-content {
-  background-color: var(--bg-dark);
-}
-
-/* Container to center content */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
   display: flex;
-  gap: 20px;
+  flex-direction: row;
+  padding: 1.88rem;
+  gap: 1.25rem;
 }
 
-/* Left Panel & Right Panel */
-.left-panel {
-  width: 340px;
-  flex-shrink: 0;
+/* --- Input & Right Panels --- */
+.input-panel,
+.result-panel {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-}
-.right-panel {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  width: 100%;
+  background: #1801300c;
+  border: 1px solid #ccc;
+  border-radius: 2rem;
+  padding: 2rem;
 }
 
-/* ----- Cards & Sections ----- */
-.input-section,
-.channel-stats-card,
-.results-section,
-.trending-video-card {
-  background-color: var(--card-bg-light);
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: var(--shadow-light);
-  transition: background-color 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
+/* ====================================================
+   6. COMPONENTS & CONTENT BOXES
+   ==================================================== */
+
+/* --- Input Section Container --- */
+.input-section {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #00b7ff;
+  border-radius: 2rem;
+  padding: 1.25rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 0.5rem rgba(0, 183, 255, 0.4);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
-.app-container.dark-mode .input-section,
-.app-container.dark-mode .channel-stats-card,
-.app-container.dark-mode .results-section,
-.app-container.dark-mode .trending-video-card {
-  background-color: var(--card-bg-dark);
-  border: 1px solid var(--border-dark);
-  box-shadow: var(--shadow-dark);
+.input-section:hover {
+  transform: scale(1.03);
 }
 
-.input-section h2,
-.channel-stats-card h3,
-.results-section h2 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  font-size: 1.2rem;
-  color: var(--text-light);
-  transition: color 0.3s ease;
-}
-.app-container.dark-mode .input-section h2,
-.app-container.dark-mode .channel-stats-card h3,
-.app-container.dark-mode .results-section h2 {
-  color: var(--text-dark);
+/* --- Input Section --- */
+.input-section h2 {
+  display: block;
+  margin-bottom: 1.25rem;
 }
 
-/* Inputs in Section */
-.input-section textarea,
+.input-section input[type="text"],
+.input-section input[type="number"],
+.input-section textarea {
+  display: block;
+  color: #cccccc;
+  font-family: "Montserrat", sans-serif;
+  width: 90%;
+  background: #0f0f0fe5;
+  margin-bottom: 1.25rem;
+  padding: 0.5rem;
+  border: 1px solid #cccccc;
+  border-radius: 0.5rem;
+  outline: none;
+}
+
 .input-section input[type="text"],
 .input-section input[type="number"] {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid var(--border-light);
-  border-radius: 4px;
-  outline: none;
-  box-sizing: border-box;
-  transition: background-color 0.3s ease, color 0.3s ease, border 0.3s ease;
+  height: 1.5rem;
+  width: 60%;
 }
-.app-container.dark-mode .input-section textarea,
-.app-container.dark-mode .input-section input[type="text"],
-.app-container.dark-mode .input-section input[type="number"] {
-  background-color: #333;
-  color: var(--text-dark);
-  border: 1px solid var(--border-dark);
+
+.input-section textarea {
+  height: 8rem;
 }
+
 .input-section label {
   display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  gap: 5px;
-  font-size: 0.9rem;
+  flex-direction: row;
+  gap: 1rem;
+  padding: 0;
+  margin-bottom: 1.25rem;
+  text-align: left;
+  font-size: 1rem;
 }
-
-/* Input Section Buttons */
-.input-section button {
-  background-color: var(--primary-color);
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 10px 15px;
-  cursor: pointer;
-  outline: none;
-  transition: background-color 0.3s ease;
-}
-.input-section button:hover {
-  background-color: var(--primary-hover);
-}
-
-/* ----- Results & Cards Layout ----- */
-.results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
-}
-
-/* Result Card & Channel Stats Card */
-.result-card,
-.channel-stats-card {
-  text-align: center;
-  background-color: var(--card-bg-light);
-  border-radius: 8px;
-  box-shadow: var(--shadow-light);
-  border: 1px solid var(--border-light);
-  padding: 15px;
-  transition: background-color 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
-}
-.app-container.dark-mode .result-card,
-.app-container.dark-mode .channel-stats-card {
-  background-color: var(--card-bg-dark);
-  border: 1px solid var(--border-dark);
-  box-shadow: var(--shadow-dark);
-}
-.result-card p,
-.channel-stats-card p {
-  margin-bottom: 8px;
-  line-height: 1.6;
-  color: #444;
-  transition: color 0.3s ease;
-}
-.app-container.dark-mode .result-card p,
-.app-container.dark-mode .channel-stats-card p {
-  color: #ccc;
-}
-.result-card strong,
-.channel-stats-card strong {
-  color: var(--text-light);
-  font-weight: 600;
-  transition: color 0.3s ease;
-}
-.app-container.dark-mode .result-card strong,
-.app-container.dark-mode .channel-stats-card strong {
-  color: var(--text-dark);
-}
-
-/* Result Card Images */
-.result-card img {
-  max-width: 100%;
-  height: auto;
-  margin-bottom: 10px;
-  border-radius: 4px;
-}
-
-/* Trending Video Card */
-.trending-video-card h3 {
-  margin: 10px 0;
-  transition: color 0.3s ease;
-}
-.app-container.dark-mode .trending-video-card h3 {
-  color: var(--text-dark);
-}
-.trending-video-card a {
-  color: var(--primary-color);
-  text-decoration: none;
-  font-size: 0.9rem;
-  transition: color 0.3s ease;
-}
-.trending-video-card a:hover {
-  color: var(--primary-hover);
-}
-.app-container.dark-mode .trending-video-card a {
-  color: var(--primary-hover);
-}
-
-/* ----- Subscriber Chart ----- */
-.subscriber-chart {
-  margin-top: 20px;
-}
-
-/* ----- Footer ----- */
-.app-footer {
-  background-color: var(--header-bg-light);
-  padding: 15px 20px;
-  text-align: center;
+.input-section input[type="checkbox"] {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: var(--shadow-light);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  flex-direction: row;
+  scale: 1.25;
+  margin-top: 0.25rem;
+  padding: 0;
 }
-.app-container.dark-mode .app-footer {
-  background-color: var(--header-bg-dark);
-  box-shadow: var(--shadow-dark);
+/* --- Input Section Button --- */
+.input-section button {
+  display: block;
+  margin-bottom: 1.25rem;
+  padding: 0.63rem 1.25rem;
+  font-family: "Montserrat", sans-serif;
+  background: #00b7ff;
+  color: #0f0f0f;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  animation: glowPulse 2s infinite;
 }
 
-.footer-links a {
-  margin-left: 15px;
+.input-section button:hover {
+  background: #0f0f0f;
+  color: #00b7ff;
+  border: 1px solid #00b7ff;
+  box-shadow: 0 0 10px rgba(0, 183, 255, 0.4);
+}
+
+/* --- Result Card --- */
+.result-card {
+  background: rgba(15, 15, 15, 0.85);
+  border: 1px solid #cccccc;
+  border-radius: 0.63rem;
+  padding: 0.94rem;
+  box-shadow: 0 0 0.5rem rgba(0, 183, 255, 0.4);
+}
+
+.result-card:hover {
+  transform: translateY(-0.25rem);
+  box-shadow: 0 0.375rem 0.94rem rgba(0, 183, 255, 0.4);
+}
+
+.result-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px;
+}
+
+.result-item {
+  background-color: rgba(0, 247, 255, 0.05);
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #c0f0ff;
+}
+.video-list .youtube-videos-card {
+  display: flex;
+  justify-content: center;
+  margin-left: 2rem;
+  height: 45vh;
+  width: 90%;
+}
+.charts-section {
+  display: block;
+  margin-top: 3rem;
+}
+.charts-section h2 {
+  margin-bottom: 2rem;
+}
+.charts-container,
+.contacts-container {
+  display: grid;
+  margin-left: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(90vh, 1fr));
+  gap: 3rem;
+}
+
+.chart {
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+  width: 80vh;
+  margin-bottom: 2rem;
+  padding-left: 4rem;
+  padding-bottom: 4rem;
+  background: rgba(15, 15, 15, 0.85);
+  border: 1px solid #cccccc;
+  border-radius: 0.63rem;
+  box-shadow: 0 0 0.5rem #00b7ff;
+}
+.chart:hover {
+  transform: translateY(-0.25rem);
+  box-shadow: 0 0.375rem 0.94rem rgba(0, 183, 255, 0.4);
+}
+.chart h3 {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  font-size: 1.5rem;
+  padding-top: 1rem;
+  margin-left: 0;
+  margin-bottom: 0;
+}
+
+/* --- Trending Video Card --- */
+.result-panel h2 {
+  margin-top: 0;
+  margin-left: 0.5rem;
+  padding-top: 0;
+  padding-bottom: 0.5rem;
+  font-size: 1.5rem;
+}
+.youtube-videos-card,
+.contact-card {
+  display: flex;
+  width: 95%;
+  background: rgba(15, 15, 15, 0.8);
+  border: 1px solid #00b7ff;
+  border-radius: 1rem;
+  padding: 1rem;
+  margin-left: 0.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 0.5rem rgba(0, 183, 255, 0.4);
+  transition: transform 0.3s;
+}
+.contact-card{
+  margin:0;
+  width: 80%;
+}
+.youtube-videos-card div,
+.contact-card div {
+  display: block;
+  padding: 1rem;
+}
+.youtube-videos-card:hover,
+.contact-card:hover {
+  transform: scale(1.03);
+}
+.youtube-videos-card img {
+  width: 50%;
+  border-radius: 0.5rem;
+  margin-bottom: 0.63rem;
+}
+.contact-card img {
+  height: 50vh;
+  width: 40vh;
+  border-radius: 0.5rem;
+  margin-bottom: 0.63rem;
+}
+.youtube-videos-card a,
+.contact-card a {
+  display: block;
+  width: 50%;
+  margin-bottom: 1.25rem;
+  padding: 0.63rem 1.25rem;
+  background: #f42c2c;
+  color: #cccccc;
+  text-align: center;
   text-decoration: none;
-  color: var(--text-light);
-  transition: color 0.3s ease;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  animation: glowPulse 2s infinite;
 }
+.contact-card a {
+  background: #00b7ff;
+}
+.youtube-videos-card a:hover {
+  background: #cccccc;
+  color: #f42c2c;
+  border: 1px solid #f42c2c;
+  box-shadow: 0 0 10px rgba(244, 44, 44, 0.4);
+}
+.contact-card a:hover {
+  background: #cccccc;
+  color: #00b7ff;
+  border: 1px solid #00b7ff;
+  box-shadow: 0 0 10px rgba(0, 183, 255, 0.4);
+}
+.youtube-videos-card input[type="number"] {
+  display: inline;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  margin-left: 0.5rem;
+  padding: 0.15rem;
+  width: 10%;
+}
+/* --- Button and Dropdown for Result and Trending Section--- */
+.btn,
+.dropdown {
+  display: block;
+  width: 50%;
+  font-family: "Montserrat", sans-serif;
+  margin-bottom: 1.25rem;
+  padding: 0.63rem 1.25rem;
+  background: #00b7ff;
+  color: #0f0f0f;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  animation: glowPulse 2s infinite;
+}
+.dropdown {
+  margin-left: 47vh;
+}
+.dropdown h2 {
+  margin: 0;
+  padding: 0;
+}
+.dropdown:hover {
+  background: #cccccc;
+  color: #004c7e;
+  border: 1px solid #004c7e;
+  box-shadow: 0 0 10px rgba(0, 76, 126, 0.4);
+}
+.btn:hover {
+  background: #0f0f0f;
+  color: #00b7ff;
+  border: 1px solid #00b7ff;
+  box-shadow: 0 0 10px rgba(0, 183, 255, 0.4);
+}
+
+/* --- Channel Stats Card --- */
+/* --- Channel Stats Card Container --- */
+.channel-stats-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #00b7ff;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 0 15px rgba(0, 183, 255, 0.4);
+  backdrop-filter: blur(8px);
+  line-height: 1.5;
+}
+
+/* --- Channel Stats Card Heading --- */
+.channel-stats-card h3 {
+  color: #cccccc;
+  font-size: 1.75rem;
+  padding-top: 0;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* --- Paragraph Spacing --- */
+.channel-stats-card p {
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+/* --- Highlight the strong text --- */
+.channel-stats-card p strong {
+  color: #00b7ff;
+  margin-right: 0.25rem;
+}
+
+.channel-stats-card .result-card {
+  margin-top: 2rem;
+}
+
+/* ====================================================
+   7. FOOTER
+   ==================================================== */
+
+/* --- App Footer --- */
+.app-footer {
+  text-align: center;
+  padding: 0.94rem;
+  background: #0f0f0fe5;
+  border-top: 1px solid #ffffff;
+}
+
+/* --- Footer Links --- */
+.footer-links a {
+  color: #00b7ff;
+  margin: 0 0.63rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
 .footer-links a:hover {
-  color: var(--primary-color);
+  text-shadow: 0 0 8px rgba(0, 183, 255, 0.4);
 }
-.app-container.dark-mode .footer-links a {
-  color: var(--text-dark);
+
+/* ====================================================
+   10. LOADER
+   ==================================================== */
+/* --- Loader Spinner & Overlay --- */
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
-.app-container.dark-mode .footer-links a:hover {
-  color: var(--primary-hover);
+
+.loader {
+  border: 8px solid rgba(0, 183, 255, 0.2);
+  border-top: 8px solid #00b7ff;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  animation: spin 1s linear infinite;
+  box-shadow:
+    0 0 15px rgba(0, 183, 255, 0.4),
+    0 0 30px rgba(0, 183, 255, 0.4),
+    0 0 60px rgba(0, 183, 255, 0.4);
 }
+
+/* Spinner Animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- Holographic Loader --- */
+.loader-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 15, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(5px);
+}
+
+.holo-loader {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 183, 255, 0.1),
+    rgba(0, 0, 0, 0.5)
+  );
+  box-shadow: inset 0 0 30px rgba(0, 183, 255, 0.4);
+  animation: rotateHolo 2s linear infinite;
+}
+
+.holo-glow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(0, 183, 255, 0.7),
+    rgba(0, 0, 0, 0),
+    rgba(204, 204, 204, 0.7)
+  );
+  filter: blur(15px);
+  animation: spinGlow 4s linear infinite;
+  opacity: 0.6;
+}
+
+.holo-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.5rem;
+  color: #cccccc;
+  text-shadow:
+    0 0 10px rgba(0, 183, 255, 0.4),
+    0 0 20px #00000000,
+    0 0 40px rgba(204, 204, 204, 0.4);
+}
+
+@keyframes rotateHolo {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinGlow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+
+/* Base styles for the about page */
+.about {
+  font-family: "Montserrat", sans-serif;
+  padding: 2rem;
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+/* Header styling */
+.about header h2 {
+  font-size: 1.75rem;
+  border-bottom: 2px solid #00b7ff;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Container styling */
+.about .container {
+  padding: 1rem;
+}
+
+/* Section headings */
+.about section h3 {
+  font-size: 1.5rem;
+  color: #00b7ff;
+  border-bottom: 1px solid #ffffff;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Paragraph and list styling */
+.about section p,
+.about section li {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+.about section ul,
+.about section ol {
+  padding-left: 1.5rem;
+}
+
+/* Features grid */
+.about .features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.about .feature {
+  background: rgba(15, 15, 15, 0.85);
+  border: 1px solid #00b7ff;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  flex: 1 1 calc(50% - 1rem);
+}
+
+.about .feature:hover{
+  transform: translateY(-0.25rem);
+  box-shadow: 0 0.375rem 0.94rem rgba(0, 183, 255, 0.4);
+}
+.about .feature h4 {
+  color: #c0f0ff;
+  font-size: 1.15rem;
+}
+
+#api-endpoints li strong {
+  color: #c0f0ff;
+}
+/*!* Responsive adjustments *!*/
+/*@media (max-width: 600px) {*/
+/*  .about .feature {*/
+/*    flex: 1 1 100%;*/
+/*  }*/
+/*}*/
