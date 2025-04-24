@@ -35,12 +35,12 @@ if __name__ == "__main__":
         except subprocess.CalledProcessError:
             print("npm build failed. Check for errors.")
 
-        # Get and print local addresses
-        print("Local addresses:")
-        print(" - http://127.0.0.1:8000")
-        for ip in get_ip_addresses():
-            print(f" - http://{ip}:8000")
     else:
         print("Frontend directory not found. Skipping build step.")
-        # Start the server bound to 0.0.0.0 (listening on all interfaces)
-        uvicorn.run("backend.app:app", host="0.0.0.0", port=8000, reload=True)
+    # Get and print local addresses
+    print("Local addresses:")
+    print(" - http://127.0.0.1:8000")
+    for ip in get_ip_addresses():
+        print(f" - http://{ip}:8000")
+    # Start the server bound to 0.0.0.0 (listening on all interfaces)
+    uvicorn.run("backend.app:app", host="0.0.0.0", port=8000, reload=True)

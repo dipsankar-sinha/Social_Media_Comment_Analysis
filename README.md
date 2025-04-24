@@ -14,8 +14,7 @@
 ### Required Libraries:
 **Install these libraries in your system by using the Terminal.** </br>
 ``` shell
-pip install "fastapi[standard]"
-pip install uvicorn
+pip install "fastapi[all]"
 pip install transformers
 pip install torch
 ```
